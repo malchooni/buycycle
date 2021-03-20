@@ -1,0 +1,41 @@
+
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ release ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - working-directory: D:/a/buycycle/buycycle/frontend
+      run: npm install
+    - working-directory: D:/a/buycycle/buycycle/frontend
+      run: npm run build
+    - name: Set up JDK 1.8 for x86
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+        java-package: jdk
+        architecture: x86
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+    - name: delete exclude file
+      run: powershell Remove-Item -Path D:/a/buycycle/buycycle/buycycle/logs/.gitkeep -Force
+    - name: zip win artifact
+      run: |
+        powershell Compress-Archive -Path D:/a/buycycle/buycycle/buycycle -DestinationPath D:/a/buycycle/buycycle/buycycle.zip
+    - name: release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: D:/a/buycycle/buycycle/buycycle.zip
+        token: ${{ secrets.TOKEN }}
+        tag: "1.0.0"

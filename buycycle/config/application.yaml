@@ -1,0 +1,27 @@
+server:
+  address: 127.0.0.1
+  port: 7771
+
+logging:
+  config: ./config/logback.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    shutdown:
+      enabled: true
+
+ebest:
+  resRootPath: 'C:\\eBEST\\xingAPI\\Res'
+  connect:
+    szServerIP: 'hts.ebestsec.co.kr'
+    nServerPort: 20001
+    connectTimeOut: 5000
+    requestReadTimeOut: 10000
+  user:
+    id: ''
+    pw: ''
+    cpwd: ''
