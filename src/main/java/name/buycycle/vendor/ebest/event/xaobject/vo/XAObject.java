@@ -1,0 +1,26 @@
+package name.buycycle.vendor.ebest.event.xaobject.vo;
+
+import com4j.EventCookie;
+import name.buycycle.vendor.ebest.event.IXAType;
+
+public class XAObject {
+
+    private IXAType ixaType;
+    private EventCookie eventCookie;
+
+    public <T extends IXAType> T getIxaType() {
+        return (T) ixaType;
+    }
+
+    public void setIxaType(IXAType ixaType) {
+        this.ixaType = ixaType;
+    }
+
+    public EventCookie getEventCookie() {
+        return eventCookie;
+    }
+
+    public void setEventCookie(EventCookie eventCookie) {
+        this.eventCookie = eventCookie;
+    }
+}
