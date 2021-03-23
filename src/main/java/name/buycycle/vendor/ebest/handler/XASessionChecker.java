@@ -1,9 +1,11 @@
 package name.buycycle.vendor.ebest.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import name.buycycle.vendor.ebest.config.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.session.XASession;
-import name.buycycle.vendor.ebest.config.vo.EBestConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -16,17 +18,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+/**
+ * 이베스트 세션 확인
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 @Component
 public class XASessionChecker implements HandlerInterceptor, HandshakeInterceptor {
 
-    /**
-     * xaSession 연결 상태를 확인한다.
-     * @param request
-     * @param response
-     * @param handler
-     * @return
-     * @throws Exception
-     */
+    private Logger logger = LoggerFactory.getLogger(XASessionChecker.class);
 
     @Autowired
     private EBestConfig eBestConfig;
@@ -67,19 +67,13 @@ public class XASessionChecker implements HandlerInterceptor, HandshakeIntercepto
             if(xaConResponse.getHeader("szCode").equals("0000"))
                 return true;
         } catch (Exception e) {
-            if(xaConResponse == null)
-                xaConResponse = new Response(null);
-            xaConResponse.putHeader("buyCycleErrMsg", e.getMessage());
+            logger.error(e.getMessage(), e);
         }
 
-//        ObjectMapper objectMapper = new ObjectMapper();
-
-        xaSession.close();
         return false;
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Exception e) {
-
     }
 }

@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * xa real 이벤트 수신 스레드
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class XARealSubscribeHelper extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -59,8 +64,6 @@ public class XARealSubscribeHelper extends Thread {
             XAObjectHelper.readyForRequest(ixaReal, resFileData, requestBody.getQuery());
             ixaReal.adviseRealData();
 
-            //TODO: 로그인해야함
-            //TODO: 실시간에서 타임아웃 고려
             while(isRunning()){
                 synchronized (xaRealEventHandler){
                     xaRealEventHandler.wait(eBestConfig.getConnect().getRequestReadTimeOut());
@@ -71,16 +74,20 @@ public class XARealSubscribeHelper extends Thread {
 
                 setResponseData(ixaReal, resFileData.getResponseColumnMap(), response);
 
-                logger.info(response.getBody().toString());
+                logger.debug(response.getBody().toString());
                 webSocketSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(response)));
             }
         }catch (Exception e){
-            logger.error("websocketesssion ", e);
+            logger.error(e.getMessage(), e);
         }finally {
-            ixaReal.unadviseRealData();
-            EventCookie eventCookie = xaObject.getEventCookie();
-            if(eventCookie != null)
-                eventCookie.close();
+            if(ixaReal != null)
+                ixaReal.unadviseRealData();
+
+            if(xaObject != null){
+                EventCookie eventCookie = xaObject.getEventCookie();
+                if(eventCookie != null)
+                    eventCookie.close();
+            }
         }
     }
 
@@ -88,6 +95,12 @@ public class XARealSubscribeHelper extends Thread {
         return running;
     }
 
+    /**
+     * 수신 ixaReal -> value object
+     * @param ixaReal
+     * @param resSchemaMap
+     * @param response
+     */
     private void setResponseData(IXAReal ixaReal, Map<String, List<String>> resSchemaMap, Response response){
         Set<String> blocks = resSchemaMap.keySet();
 

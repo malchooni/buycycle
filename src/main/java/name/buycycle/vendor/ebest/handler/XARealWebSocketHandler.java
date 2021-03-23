@@ -14,6 +14,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+/**
+ * 웹소켓 json 메시지 요청, 응답
+ */
 @Component
 public class XARealWebSocketHandler extends TextWebSocketHandler {
 
@@ -38,6 +41,12 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
         logger.info("ConnectionClosed : " + session.getId());
     }
 
+    /**
+     * 요청 받은 후 수신 이벤트 응답 스레드 생성
+     * @param session
+     * @param message
+     * @throws Exception
+     */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String requestJsonMessage = message.getPayload();
