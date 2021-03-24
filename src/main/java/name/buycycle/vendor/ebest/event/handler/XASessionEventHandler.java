@@ -5,6 +5,11 @@ import name.buycycle.vendor.ebest.session.com4j._IXASessionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * xa session 로그인 이벤트 핸들러
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class XASessionEventHandler extends _IXASessionEvents {
 
     private Logger logger = LoggerFactory.getLogger(XASessionEventHandler.class);

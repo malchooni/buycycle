@@ -5,6 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * json 응답
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class Response {
     private Map<String,String> header;
     private Map<String, List<Map<String,String>>> body;

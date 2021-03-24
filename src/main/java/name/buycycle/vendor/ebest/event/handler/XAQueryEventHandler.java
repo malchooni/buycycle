@@ -5,6 +5,11 @@ import name.buycycle.vendor.ebest.event.vo.res.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * xa query 이벤트 핸들러
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class XAQueryEventHandler extends _IXAQueryEvents{
 
     private Logger logger = LoggerFactory.getLogger(XAQueryEventHandler.class);
@@ -18,6 +23,10 @@ public class XAQueryEventHandler extends _IXAQueryEvents{
         return response;
     }
 
+    /**
+     * 수신 데이터
+     * @param szTrCode Mandatory java.lang.String parameter.
+     */
     @Override
     public void receiveData(String szTrCode) {
         logger.info(Thread.currentThread().getName() + " receiveData szTrCode : " + szTrCode);
@@ -27,6 +36,12 @@ public class XAQueryEventHandler extends _IXAQueryEvents{
         }
     }
 
+    /**
+     * 수신 메시지
+     * @param bIsSystemError Mandatory java.lang.String parameter.
+     * @param nMessageCode Mandatory java.lang.String parameter.
+     * @param szMessage Mandatory java.lang.String parameter.
+     */
     @Override
     public void receiveMessage(String bIsSystemError, String nMessageCode, String szMessage) {
         logger.info(Thread.currentThread().getName() + " receiveMessage bIsSystemError : " + bIsSystemError + " nMessageCode : " + nMessageCode + " szMessage : " + szMessage );

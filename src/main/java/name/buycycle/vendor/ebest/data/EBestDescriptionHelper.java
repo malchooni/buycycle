@@ -16,6 +16,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * res 파일에 대한 정보
+ */
 @Component
 public class EBestDescriptionHelper {
 

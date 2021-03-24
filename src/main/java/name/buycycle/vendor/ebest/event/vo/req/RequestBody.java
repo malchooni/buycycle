@@ -2,6 +2,11 @@ package name.buycycle.vendor.ebest.event.vo.req;
 
 import java.util.Map;
 
+/**
+ * 요청 바디
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class RequestBody {
 
     private String trName;

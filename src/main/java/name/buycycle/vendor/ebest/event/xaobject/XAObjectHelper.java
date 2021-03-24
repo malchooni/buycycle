@@ -9,8 +9,23 @@ import name.buycycle.vendor.ebest.message.ResFileData;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * xing api 인터페이스 객체 제어
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class XAObjectHelper {
 
+    /**
+     * 인터페이스 객체 생성
+     * @param resRootPath res 파일 루트 경로
+     * @param resFileData res 파일 객체
+     * @param eventInterface 이벤트 핸들러 클래스
+     * @param receiver 인터페이스 객체
+     * @param <T> IXAQuery or IXAReal
+     * @return
+     * @throws Exception
+     */
     public static <T> XAObject createXAObject(String resRootPath, ResFileData resFileData, Class<T> eventInterface, T receiver) throws Exception {
 
         String filePath = resRootPath + "\\" + resFileData.getName() + ".res";
@@ -39,6 +54,12 @@ public class XAObjectHelper {
         return xaObject;
     }
 
+    /**
+     * ixaQuery 객체로 맵에 있는 요청값 셋팅
+     * @param ixaQuery 인터페이스 객체
+     * @param resFileData res 파일 객체
+     * @param query 요청 값
+     */
     public static void readyForRequest(IXAQuery ixaQuery, ResFileData resFileData, Map<String, String> query){
         String szBlockName = resFileData.getRequestBlockName();
         List<String> requestColumnList = resFileData.getRequestColumnList();
@@ -51,10 +72,12 @@ public class XAObjectHelper {
         }
     }
 
-    public static void readyForResponse(IXAQuery ixaQuery, ResFileData resFileData){
-
-    }
-
+    /**
+     * ixaReal 객체로 맵에 있는 요청값 셋팅
+     * @param ixaReal 인터페이스 객체
+     * @param resFileData res 파일 객체
+     * @param query 요청 값
+     */
     public static void readyForRequest(IXAReal ixaReal, ResFileData resFileData, Map<String, String> query){
 
         String szBlockName = resFileData.getRequestBlockName();

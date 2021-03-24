@@ -33,6 +33,10 @@ public class MessageHelper {
         this.resRootPath = resRootPath;
     }
 
+    /**
+     * 초기화
+     * @throws Exception
+     */
     public void initialize() throws Exception{
 
         if(this.resRootPath == null)
@@ -55,8 +59,7 @@ public class MessageHelper {
             try{
                 this.resDataRepository.putResFileData( resFile.getName().split("\\.")[0], resFileReader.load(resFile) );
             }catch (Exception e){
-                System.out.println(resFile.getName() + " Exception");
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -65,10 +68,20 @@ public class MessageHelper {
         return this.resDataRepository.getResFileData(trName);
     }
 
+    /**
+     * res 레파지토리 반환
+     * @return
+     */
     public ResDataRepository getResDataRepository(){
         return this.resDataRepository;
     }
 
+    /**
+     * res file data 반환
+     * @param type REAL or QUERY
+     * @param trName
+     * @return
+     */
     public ResFileData getResFileData(String type, String trName){
         Map<String, ResFileData> resMap = this.resDataRepository.getResMap(type);
         return resMap.get(trName);

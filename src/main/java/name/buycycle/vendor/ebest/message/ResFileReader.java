@@ -1,8 +1,16 @@
 package name.buycycle.vendor.ebest.message;
 
 import java.io.*;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * res file parser
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class ResFileReader {
 
     private static final String START_MARK = "BEGIN_DATA_MAP";
