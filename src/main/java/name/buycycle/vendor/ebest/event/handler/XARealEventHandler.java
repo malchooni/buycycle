@@ -5,6 +5,11 @@ import name.buycycle.vendor.ebest.event.vo.res.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * xa real 이벤트 핸들러
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class XARealEventHandler extends _IXARealEvents {
 
     private Logger logger = LoggerFactory.getLogger(XARealEventHandler.class);
@@ -22,7 +27,7 @@ public class XARealEventHandler extends _IXARealEvents {
 
     @Override
     public void receiveRealData(String szTrCode) {
-        logger.info(this.requestUUID + " szTrCode : " + szTrCode);
+        logger.debug(this.requestUUID + " szTrCode : " + szTrCode);
         this.response = new Response(this.requestUUID);
         this.response.putHeader("szTrCode", szTrCode);
         synchronized (this){

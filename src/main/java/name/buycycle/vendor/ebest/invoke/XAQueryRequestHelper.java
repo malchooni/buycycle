@@ -21,6 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * xa query 요청 / 응답
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 @Component
 public class XAQueryRequestHelper {
 
@@ -32,8 +37,8 @@ public class XAQueryRequestHelper {
 
     /**
      * xa query 요청, 응답
-     * @param request
-     * @return
+     * @param request 요청 값
+     * @return 응답
      */
     public Response requestQuery(Request request){
 
@@ -60,6 +65,7 @@ public class XAQueryRequestHelper {
             response = xaQueryEventHandler.getResponse();
             setResponseData(ixaQuery, resFileData.getResponseColumnMap(), response);
         }catch (Exception e){
+            logger.error(e.getMessage(), e);
             exceptionResponseMsg(request, response, e);
         }finally {
             if(xaObject.getEventCookie() != null)

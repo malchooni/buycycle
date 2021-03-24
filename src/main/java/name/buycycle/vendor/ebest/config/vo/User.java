@@ -1,5 +1,10 @@
 package name.buycycle.vendor.ebest.config.vo;
 
+/**
+ * ebest user value object
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class User {
 
     private String id;

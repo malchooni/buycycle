@@ -2,6 +2,11 @@ package name.buycycle.vendor.ebest.event.vo.req;
 
 import java.util.UUID;
 
+/**
+ * 요청 헤더
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class RequestHeader {
 
     private String uuid;

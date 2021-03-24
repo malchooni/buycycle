@@ -6,6 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 
+/**
+ * welcome to buycycle
+ * https://buycycle.name
+ *
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 @SpringBootApplication
 public class BuyCycleApplication {
 

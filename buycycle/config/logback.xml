@@ -26,7 +26,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="name.buycycle" level="debug" additivity="false">
+    <logger name="name.buycycle" level="info" additivity="false">
         <appender-ref ref="RollingFile"/>
         <appender-ref ref="Console"/>
     </logger>

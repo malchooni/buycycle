@@ -1,5 +1,10 @@
 package name.buycycle.vendor.ebest.event.vo.req;
 
+/**
+ * json 요청
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 public class Request {
     private RequestHeader requestHeader;
     private RequestBody body;

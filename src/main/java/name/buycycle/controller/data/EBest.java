@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 이베스트 컨트롤러
+ * @author : ijyoon
+ * @date : 2021/03/24
+ */
 @RestController
 @RequestMapping("/data/ebest")
 public class EBest {
