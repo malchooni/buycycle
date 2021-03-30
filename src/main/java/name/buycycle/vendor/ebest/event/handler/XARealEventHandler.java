@@ -2,6 +2,7 @@ package name.buycycle.vendor.ebest.event.handler;
 
 import name.buycycle.vendor.ebest.event.com4j._IXARealEvents;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
+import name.buycycle.vendor.ebest.session.XASessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,9 @@ public class XARealEventHandler extends _IXARealEvents {
         logger.debug(this.requestUUID + " szTrCode : " + szTrCode);
         this.response = new Response(this.requestUUID);
         this.response.putHeader("szTrCode", szTrCode);
+
+        XASessionManager.getInstance().touch();
+
         synchronized (this){
             this.notify();
         }

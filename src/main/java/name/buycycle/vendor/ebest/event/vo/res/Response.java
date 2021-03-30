@@ -14,6 +14,10 @@ public class Response {
     private Map<String,String> header;
     private Map<String, List<Map<String,String>>> body;
 
+    public Response() {
+        this(null);
+    }
+
     public Response(String uuid) {
         this.header = new LinkedHashMap<>();
         this.body = new LinkedHashMap<>();
