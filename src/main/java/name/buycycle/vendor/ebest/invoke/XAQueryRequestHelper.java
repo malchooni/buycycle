@@ -1,5 +1,7 @@
 package name.buycycle.vendor.ebest.invoke;
 
+import com4j.COM4J;
+import com4j.ComThread;
 import name.buycycle.vendor.ebest.event.com4j.IXAQuery;
 import name.buycycle.vendor.ebest.event.com4j._IXAQueryEvents;
 import name.buycycle.vendor.ebest.event.handler.XAQueryEventHandler;
@@ -68,8 +70,10 @@ public class XAQueryRequestHelper {
             logger.error(e.getMessage(), e);
             exceptionResponseMsg(request, response, e);
         }finally {
-            if(xaObject.getEventCookie() != null)
+            if(xaObject.getEventCookie() != null) {
                 xaObject.getEventCookie().close();
+                COM4J.cleanUp();
+            }
         }
 
         return response;

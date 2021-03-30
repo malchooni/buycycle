@@ -2,6 +2,7 @@ package name.buycycle.vendor.ebest;
 
 import name.buycycle.vendor.ebest.config.vo.EBestConfig;
 import name.buycycle.vendor.ebest.message.MessageHelper;
+import name.buycycle.vendor.ebest.session.XASessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class EBestInitialization {
     private Logger logger = LoggerFactory.getLogger(EBestInitialization.class);
 
     @Autowired
-    EBestConfig eBestConfig;
+    private EBestConfig eBestConfig;
 
     /**
      * res 파일을 메시지 맵으로 읽는다.
@@ -31,6 +32,13 @@ public class EBestInitialization {
         MessageHelper messageHelper = MessageHelper.getInstance();
         messageHelper.setResRootPath(eBestConfig.getResRootPath());
         messageHelper.initialize();
+    }
+
+    @PostConstruct
+    public void xaSessionManager(){
+        XASessionManager xaSessionManager = XASessionManager.getInstance();
+        xaSessionManager.setEBestConfig(eBestConfig);
+        xaSessionManager.start();
     }
 
     /**

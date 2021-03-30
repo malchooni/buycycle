@@ -55,13 +55,21 @@ public class MessageHelper {
             return;
 
         ResFileReader resFileReader = new ResFileReader();
+        int successCount = 0;
         for(File resFile : files){
             try{
-                this.resDataRepository.putResFileData( resFile.getName().split("\\.")[0], resFileReader.load(resFile) );
+                String name = resFile.getName().split("\\.")[0];
+                this.resDataRepository.putResFileData(name, resFileReader.load(resFile) );
+                successCount++;
+
+                if(this.logger.isDebugEnabled())
+                    this.logger.debug("res file [" + name + "] loaded..");
             }catch (Exception e){
                 logger.error(e.getMessage(), e);
             }
         }
+        this.logger.info(successCount + " res file loaded..");
+        this.logger.info("MessageHelper initialization completed..");
     }
 
     public ResFileData getResFileData(String trName){
