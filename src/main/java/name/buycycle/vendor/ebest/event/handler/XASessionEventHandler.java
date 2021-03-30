@@ -5,6 +5,8 @@ import name.buycycle.vendor.ebest.session.com4j._IXASessionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
+
 /**
  * xa session 로그인 이벤트 핸들러
  * @author : ijyoon
@@ -15,8 +17,8 @@ public class XASessionEventHandler extends _IXASessionEvents {
     private Logger logger = LoggerFactory.getLogger(XASessionEventHandler.class);
     private Response response;
 
-    public XASessionEventHandler(String uuid) {
-        this.response = new Response(uuid);
+    public XASessionEventHandler() {
+        this.response = new Response(UUID.randomUUID().toString());
     }
 
     public Response getResponse() {

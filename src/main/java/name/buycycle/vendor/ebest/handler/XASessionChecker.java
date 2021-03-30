@@ -3,7 +3,7 @@ package name.buycycle.vendor.ebest.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import name.buycycle.vendor.ebest.config.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
-import name.buycycle.vendor.ebest.session.XASession;
+import name.buycycle.vendor.ebest.session.XASessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,49 +28,41 @@ public class XASessionChecker implements HandlerInterceptor, HandshakeIntercepto
 
     private Logger logger = LoggerFactory.getLogger(XASessionChecker.class);
 
-    @Autowired
-    private EBestConfig eBestConfig;
+    private XASessionManager xaSessionManager = XASessionManager.getInstance();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        XASession xaSession = XASession.getInstance();
-        if(xaSession.isConnected())
+
+        if(xaSessionManager.isSucceedLogin())
             return true;
 
-        Response xaConResponse = null;
-        try {
-            xaConResponse = xaSession.loginRequest(eBestConfig);
-            if(xaConResponse.getHeader("szCode").equals("0000"))
-                return true;
-        } catch (Exception e) {
-            if(xaConResponse == null)
+        Response xaConResponse = xaSessionManager.login();
+        if(xaSessionManager.isSucceedLogin()){
+            return true;
+        }else{
+            if(xaConResponse == null) {
                 xaConResponse = new Response(null);
-            xaConResponse.putHeader("buyCycleErrMsg", e.getMessage());
+                xaConResponse.putHeader("buyCycleErrMsg", "login response is null.");
+            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            response.setContentType("application/json;charset=utf-8");
+            response.getWriter().write(objectMapper.writeValueAsString(xaConResponse));
+            return false;
         }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        response.setContentType("application/json;charset=utf-8");
-        response.getWriter().write(objectMapper.writeValueAsString(xaConResponse));
-        xaSession.close();
-        return false;
     }
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
-        XASession xaSession = XASession.getInstance();
-        if(xaSession.isConnected())
+
+        if(xaSessionManager.isSucceedLogin())
             return true;
 
-        Response xaConResponse = null;
-        try {
-            xaConResponse = xaSession.loginRequest(eBestConfig);
-            if(xaConResponse.getHeader("szCode").equals("0000"))
-                return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        Response xaConResponse = xaSessionManager.login();
+        if(xaSessionManager.isSucceedLogin()){
+            return true;
+        }else {
+            return false;
         }
-
-        return false;
     }
 
     @Override

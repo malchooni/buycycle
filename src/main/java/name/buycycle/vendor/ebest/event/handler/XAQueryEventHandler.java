@@ -2,6 +2,7 @@ package name.buycycle.vendor.ebest.event.handler;
 
 import name.buycycle.vendor.ebest.event.com4j._IXAQueryEvents;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
+import name.buycycle.vendor.ebest.session.XASessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,9 @@ public class XAQueryEventHandler extends _IXAQueryEvents{
     public void receiveData(String szTrCode) {
         logger.info(Thread.currentThread().getName() + " receiveData szTrCode : " + szTrCode);
         this.response.putHeader("szTrCode", szTrCode);
+
+        XASessionManager.getInstance().touch();
+
         synchronized (this){
             this.notify();
         }

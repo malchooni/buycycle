@@ -50,7 +50,7 @@
               <td>특정 TR의 요청 샘플 메시지를 반환 한다.</td>
             </tr>
             <tr>
-              <td>HTTP - POST</td>
+              <td>HTTP - POST <br/> Content-Type: application/json</td>
               <td>Json</td>
               <td>/data/ebest/query</td>
               <td>XAQuery (Reqest/Response) TR을 호출 한다.</td>
