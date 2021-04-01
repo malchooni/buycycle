@@ -33,12 +33,14 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        logger.info("ConnectionEstablished : " + session.getId());
+        if(logger.isInfoEnabled())
+            logger.info("ConnectionEstablished : {}", session.getId());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        logger.info("ConnectionClosed : " + session.getId());
+        if(logger.isInfoEnabled())
+            logger.info("ConnectionClosed : {}", session.getId());
     }
 
     /**
@@ -50,6 +52,10 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String requestJsonMessage = message.getPayload();
+
+        if(logger.isDebugEnabled())
+            logger.debug(" => request message \n---\n{}\n---", requestJsonMessage);
+
         Request request = objectMapper.readValue(requestJsonMessage, Request.class);
 
         new XARealSubscribeHelper(eBestConfig, session, request).start();

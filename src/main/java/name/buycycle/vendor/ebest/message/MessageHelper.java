@@ -44,7 +44,8 @@ public class MessageHelper {
 
         File resRoot = new File(this.resRootPath);
         if(!resRoot.isDirectory()) {
-            logger.error(this.resRootPath + " path is not directory.");
+            if(logger.isErrorEnabled())
+                logger.error("this path is not directory. [{}]", this.resRootPath);
             return;
         }
 
@@ -58,18 +59,21 @@ public class MessageHelper {
         int successCount = 0;
         for(File resFile : files){
             try{
-                String name = resFile.getName().split("\\.")[0];
-                this.resDataRepository.putResFileData(name, resFileReader.load(resFile) );
+                ResFileData resFileData = resFileReader.load(resFile);
+                this.resDataRepository.putResFileData(resFileData.getName(),  resFileData);
                 successCount++;
 
-                if(this.logger.isDebugEnabled())
-                    this.logger.debug("res file [" + name + "] loaded..");
+                if(logger.isDebugEnabled())
+                    logger.debug("[{}][{}][{}] file loaded..", resFileData.getName(), resFileData.getResType(), resFileData.getDescription());
             }catch (Exception e){
-                logger.error(e.getMessage(), e);
+                if(logger.isErrorEnabled())
+                    logger.error(e.getMessage(), e);
             }
         }
-        this.logger.info(successCount + " res file loaded..");
-        this.logger.info("MessageHelper initialization completed..");
+        if(logger.isInfoEnabled()){
+            logger.info("{} res file loaded..", successCount);
+            logger.info("MessageHelper initialization completed..");
+        }
     }
 
     public ResFileData getResFileData(String trName){

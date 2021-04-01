@@ -1,5 +1,7 @@
 package name.buycycle.controller.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import name.buycycle.controller.data.vo.ResTable;
 import name.buycycle.vendor.ebest.data.EBestDescriptionHelper;
 import name.buycycle.vendor.ebest.data.vo.ResDesc;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class EBest {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     @Autowired
     private XAQueryRequestHelper xaQueryRequestHelper;
@@ -37,7 +40,16 @@ public class EBest {
      */
     @PostMapping(value = "/query", produces = "application/json;charset=utf-8")
     Response queryRequest(@RequestBody Request request) throws Exception {
-        return xaQueryRequestHelper.requestQuery(request);
+
+        if(logger.isDebugEnabled())
+            logger.debug(" => request message \n---\n{}\n---", objectMapper.writeValueAsString(request));
+
+        Response response = xaQueryRequestHelper.requestQuery(request);
+
+        if(logger.isDebugEnabled())
+            logger.debug(" <= response message \n---\n{}\n---", objectMapper.writeValueAsString(response));
+
+        return response;
     }
 
     /**
@@ -47,6 +59,8 @@ public class EBest {
      */
     @RequestMapping("/list/real")
     ResTable listReal() {
+        if(logger.isInfoEnabled())
+            logger.info("Real 목록 요청");
         return eBestDescriptionHelper.resList(ResFileData.REAL);
     }
 
@@ -57,6 +71,8 @@ public class EBest {
      */
     @RequestMapping("/list/query")
     ResTable listQuery() {
+        if(logger.isInfoEnabled())
+            logger.info("Query 목록 요청");
         return eBestDescriptionHelper.resList(ResFileData.QUERY);
     }
 
@@ -68,7 +84,8 @@ public class EBest {
      */
     @RequestMapping("/list/real/{trName}")
     ResDesc listReal(@PathVariable String trName) {
-        logger.info(trName);
+        if(logger.isInfoEnabled())
+            logger.info("[{}] Real 명세 요청", trName);
         return eBestDescriptionHelper.resDesc(trName);
     }
 
@@ -80,7 +97,8 @@ public class EBest {
      */
     @RequestMapping("/list/query/{trName}")
     ResDesc listQuery(@PathVariable String trName) {
-        logger.info(trName);
+        if(logger.isInfoEnabled())
+            logger.info("[{}] Query 명세 요청", trName);
         return eBestDescriptionHelper.resDesc(trName);
     }
 
@@ -92,6 +110,8 @@ public class EBest {
      */
     @RequestMapping(value = "/requestmessage/{trName}")
     Request requestMessage(@PathVariable String trName) throws Exception {
+        if(logger.isInfoEnabled())
+            logger.info("[{}] 요청 메시지 샘플", trName);
         return eBestDescriptionHelper.requestMessage(trName);
     }
 
