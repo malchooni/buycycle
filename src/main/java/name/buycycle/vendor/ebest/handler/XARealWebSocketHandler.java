@@ -50,6 +50,10 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String requestJsonMessage = message.getPayload();
+
+        if(logger.isDebugEnabled())
+            logger.debug(" => request message \n---\n{}\n---", requestJsonMessage);
+
         Request request = objectMapper.readValue(requestJsonMessage, Request.class);
 
         new XARealSubscribeHelper(eBestConfig, session, request).start();

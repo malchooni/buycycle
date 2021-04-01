@@ -74,8 +74,11 @@ public class XARealSubscribeHelper extends Thread {
 
                 setResponseData(ixaReal, resFileData.getResponseColumnMap(), response);
 
-                logger.debug(response.getBody().toString());
-                webSocketSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(response)));
+                String responseStr = objectMapper.writeValueAsString(response);
+                if(logger.isDebugEnabled())
+                    logger.debug(" <= response message \n---\n{}\n---", responseStr);
+
+                webSocketSession.sendMessage(new TextMessage(responseStr));
             }
         }catch (Exception e){
             logger.error(e.getMessage(), e);

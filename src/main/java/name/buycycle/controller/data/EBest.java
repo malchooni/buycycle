@@ -1,5 +1,7 @@
 package name.buycycle.controller.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import name.buycycle.controller.data.vo.ResTable;
 import name.buycycle.vendor.ebest.data.EBestDescriptionHelper;
 import name.buycycle.vendor.ebest.data.vo.ResDesc;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class EBest {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     @Autowired
     private XAQueryRequestHelper xaQueryRequestHelper;
@@ -37,7 +40,16 @@ public class EBest {
      */
     @PostMapping(value = "/query", produces = "application/json;charset=utf-8")
     Response queryRequest(@RequestBody Request request) throws Exception {
-        return xaQueryRequestHelper.requestQuery(request);
+
+        if(logger.isDebugEnabled())
+            logger.debug(" => request message \n---\n{}\n---", objectMapper.writeValueAsString(request));
+
+        Response response = xaQueryRequestHelper.requestQuery(request);
+
+        if(logger.isDebugEnabled())
+            logger.debug(" <= response message \n---\n{}\n---", objectMapper.writeValueAsString(response));
+
+        return response;
     }
 
     /**
