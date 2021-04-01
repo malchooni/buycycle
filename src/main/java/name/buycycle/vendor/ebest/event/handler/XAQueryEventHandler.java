@@ -30,11 +30,11 @@ public class XAQueryEventHandler extends _IXAQueryEvents{
      */
     @Override
     public void receiveData(String szTrCode) {
-        logger.info(Thread.currentThread().getName() + " receiveData szTrCode : " + szTrCode);
+        if(logger.isInfoEnabled())
+            logger.info("receiveData szTrCode : {}", szTrCode);
+
         this.response.putHeader("szTrCode", szTrCode);
-
         XASessionManager.getInstance().touch();
-
         synchronized (this){
             this.notify();
         }
@@ -48,7 +48,9 @@ public class XAQueryEventHandler extends _IXAQueryEvents{
      */
     @Override
     public void receiveMessage(String bIsSystemError, String nMessageCode, String szMessage) {
-        logger.info(Thread.currentThread().getName() + " receiveMessage bIsSystemError : " + bIsSystemError + " nMessageCode : " + nMessageCode + " szMessage : " + szMessage );
+        if(logger.isInfoEnabled())
+            logger.info("receiveMessage bIsSystemError : {}, nMessageCode : {}, szMessage: {}", bIsSystemError, nMessageCode, szMessage);
+
         this.response.putHeader("bIsSystemError", bIsSystemError);
         this.response.putHeader("nMessageCode", nMessageCode);
         this.response.putHeader("szMessage", szMessage);
@@ -62,7 +64,9 @@ public class XAQueryEventHandler extends _IXAQueryEvents{
 
     @Override
     public void receiveChartRealData(String szTrCode) {
-        logger.info(Thread.currentThread().getName() + " receiveChartRealData szTrCode : " + szTrCode);
+        if(logger.isInfoEnabled())
+            logger.info("receiveChartRealData szTrCode : {}", szTrCode);
+
         this.response.putHeader("szTrCode", szTrCode);
         synchronized (this){
             this.notify();
@@ -71,7 +75,9 @@ public class XAQueryEventHandler extends _IXAQueryEvents{
 
     @Override
     public void receiveSearchRealData(String szTrCode) {
-        logger.info(Thread.currentThread().getName() + " receiveSearchRealData szTrCode : " + szTrCode);
+        if(logger.isInfoEnabled())
+            logger.info("receiveSearchRealData szTrCode : {}", szTrCode);
+
         this.response.putHeader("szTrCode", szTrCode);
         synchronized (this){
             this.notify();

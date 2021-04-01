@@ -81,7 +81,8 @@ public class XARealSubscribeHelper extends Thread {
                 webSocketSession.sendMessage(new TextMessage(responseStr));
             }
         }catch (Exception e){
-            logger.error(e.getMessage(), e);
+            if(logger.isErrorEnabled())
+                logger.error(e.getMessage(), e);
         }finally {
             if(ixaReal != null)
                 ixaReal.unadviseRealData();

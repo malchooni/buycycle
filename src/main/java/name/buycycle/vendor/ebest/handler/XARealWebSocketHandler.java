@@ -33,12 +33,14 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        logger.info("ConnectionEstablished : " + session.getId());
+        if(logger.isInfoEnabled())
+            logger.info("ConnectionEstablished : {}", session.getId());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        logger.info("ConnectionClosed : " + session.getId());
+        if(logger.isInfoEnabled())
+            logger.info("ConnectionClosed : {}", session.getId());
     }
 
     /**

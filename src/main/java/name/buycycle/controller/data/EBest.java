@@ -59,6 +59,8 @@ public class EBest {
      */
     @RequestMapping("/list/real")
     ResTable listReal() {
+        if(logger.isInfoEnabled())
+            logger.info("Real 목록 요청");
         return eBestDescriptionHelper.resList(ResFileData.REAL);
     }
 
@@ -69,6 +71,8 @@ public class EBest {
      */
     @RequestMapping("/list/query")
     ResTable listQuery() {
+        if(logger.isInfoEnabled())
+            logger.info("Query 목록 요청");
         return eBestDescriptionHelper.resList(ResFileData.QUERY);
     }
 
@@ -80,7 +84,8 @@ public class EBest {
      */
     @RequestMapping("/list/real/{trName}")
     ResDesc listReal(@PathVariable String trName) {
-        logger.info(trName);
+        if(logger.isInfoEnabled())
+            logger.info("[{}] Real 명세 요청", trName);
         return eBestDescriptionHelper.resDesc(trName);
     }
 
@@ -92,7 +97,8 @@ public class EBest {
      */
     @RequestMapping("/list/query/{trName}")
     ResDesc listQuery(@PathVariable String trName) {
-        logger.info(trName);
+        if(logger.isInfoEnabled())
+            logger.info("[{}] Query 명세 요청", trName);
         return eBestDescriptionHelper.resDesc(trName);
     }
 
@@ -104,6 +110,8 @@ public class EBest {
      */
     @RequestMapping(value = "/requestmessage/{trName}")
     Request requestMessage(@PathVariable String trName) throws Exception {
+        if(logger.isInfoEnabled())
+            logger.info("[{}] 요청 메시지 샘플", trName);
         return eBestDescriptionHelper.requestMessage(trName);
     }
 

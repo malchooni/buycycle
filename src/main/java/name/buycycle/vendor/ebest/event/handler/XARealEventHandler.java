@@ -28,7 +28,9 @@ public class XARealEventHandler extends _IXARealEvents {
 
     @Override
     public void receiveRealData(String szTrCode) {
-        logger.debug(this.requestUUID + " szTrCode : " + szTrCode);
+        if(logger.isDebugEnabled())
+            logger.debug("RequestUUID : {}, szTrCode : {}", this.requestUUID, szTrCode);
+
         this.response = new Response(this.requestUUID);
         this.response.putHeader("szTrCode", szTrCode);
 
@@ -41,7 +43,9 @@ public class XARealEventHandler extends _IXARealEvents {
 
     @Override
     public void recieveLinkData(String szLinkName, String szData, String szFiller) {
-        logger.info(this.requestUUID + " szLinkName : " + szLinkName + " szData : " + szData + " szFiller : " + szFiller );
+        if(logger.isDebugEnabled())
+            logger.debug("RequestUUID : {}, szLinkName : {}, szData : {}, szFiller : {}", this.requestUUID, szLinkName, szData, szFiller);
+
         this.response = new Response(this.requestUUID);
         this.response.putHeader("szLinkName", szLinkName);
         this.response.putHeader("szData", szData);

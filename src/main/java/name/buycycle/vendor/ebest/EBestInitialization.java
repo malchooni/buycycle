@@ -46,10 +46,11 @@ public class EBestInitialization {
      */
     @PreDestroy
     public void shutdown(){
-
         XASessionManager.getInstance().shutdown();
-        logger.info("======================");
-        logger.info("  Buycycle stopped... ");
-        logger.info("======================");
+        if(logger.isInfoEnabled()){
+            logger.info("======================");
+            logger.info("  Buycycle stopped... ");
+            logger.info("======================");
+        }
     }
 }

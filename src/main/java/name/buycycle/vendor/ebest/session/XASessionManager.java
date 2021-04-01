@@ -98,7 +98,9 @@ public class XASessionManager extends Thread{
 
     @Override
     public void run() {
-        logger.info("XASessionManager started..");
+        if(logger.isInfoEnabled())
+            logger.info("XASessionManager started..");
+
         XASession xaSession = new XASession(this.eBestConfig);
         this.touchRequest();
 
@@ -122,14 +124,17 @@ public class XASessionManager extends Thread{
                         this.checkRequest(xaSession);
                         break;
                     default:
-                        logger.error("unsupported operation", new UnsupportedOperationException(command));
+                        if(logger.isErrorEnabled())
+                            logger.error("unsupported operation", new UnsupportedOperationException(command));
                 }
             }catch (Exception e){
-                logger.error(e.getMessage(), e);
+                if(logger.isErrorEnabled())
+                    logger.error(e.getMessage(), e);
             }
         }
 
-        logger.info("XASessionManager shutdown done..");
+        if(logger.isInfoEnabled())
+            logger.info("XASessionManager shutdown done..");
     }
 
     /**
@@ -142,7 +147,8 @@ public class XASessionManager extends Thread{
             try{
                 response = xaSession.login();
             }catch (InterruptedException | RequestTimeOutException | ConnectFailException e){
-                logger.error(e.getMessage(), e);
+                if(logger.isErrorEnabled())
+                    logger.error(e.getMessage(), e);
                 response = errorResponse(e);
             }
 
@@ -197,7 +203,8 @@ public class XASessionManager extends Thread{
         if( (now - this.touchTime) > (5 * 60 * 1000) ){
             if(isSucceedLogin()) {
                 this.closeRequest(xaSession);
-                this.logger.info("xasession idle time out. connection closed.");
+                if(logger.isInfoEnabled())
+                    logger.info("xasession idle time out. connection closed.");
             }
         }
     }

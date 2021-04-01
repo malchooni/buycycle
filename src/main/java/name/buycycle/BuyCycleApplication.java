@@ -22,8 +22,10 @@ public class BuyCycleApplication {
 		SpringApplicationBuilder app = new SpringApplicationBuilder(name.buycycle.BuyCycleApplication.class);
 		app.build().addListeners(new ApplicationPidFileWriter("./buycycle.pid"));
 		app.run(args);
-		logger.info("======================");
-		logger.info("  Buycycle started... ");
-		logger.info("======================");
+		if(logger.isInfoEnabled()){
+			logger.info("======================");
+			logger.info("  Buycycle started... ");
+			logger.info("======================");
+		}
 	}
 }

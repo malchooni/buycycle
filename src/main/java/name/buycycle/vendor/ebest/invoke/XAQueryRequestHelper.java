@@ -67,7 +67,8 @@ public class XAQueryRequestHelper {
             response = xaQueryEventHandler.getResponse();
             setResponseData(ixaQuery, resFileData.getResponseColumnMap(), response);
         }catch (Exception e){
-            logger.error(e.getMessage(), e);
+            if(logger.isErrorEnabled())
+                logger.error(e.getMessage(), e);
             exceptionResponseMsg(request, response, e);
         }finally {
             if(xaObject.getEventCookie() != null) {
