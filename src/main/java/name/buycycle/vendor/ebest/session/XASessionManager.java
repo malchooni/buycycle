@@ -176,7 +176,9 @@ public class XASessionManager extends Thread{
      * @param xaSession XASession
      */
     private void shutdownRequest(XASession xaSession){
-        this.closeRequest(xaSession);
+        if(isSucceedLogin()){
+            this.closeRequest(xaSession);
+        }
         this.running = false;
     }
 

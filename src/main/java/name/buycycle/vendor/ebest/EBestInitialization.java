@@ -45,7 +45,9 @@ public class EBestInitialization {
      * xa session 종료.
      */
     @PreDestroy
-    public void closeXASession(){
+    public void shutdown(){
+
+        XASessionManager.getInstance().shutdown();
         logger.info("======================");
         logger.info("  Buycycle stopped... ");
         logger.info("======================");
