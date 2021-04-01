@@ -27,7 +27,8 @@ public class XASessionEventHandler extends _IXASessionEvents {
 
     @Override
     public void login(String szCode, String szMsg) {
-        logger.info("["+ Thread.currentThread().getName() + " " + Thread.currentThread().isDaemon() + "] szCode : " + szCode + " , szMsg : " + szMsg);
+        if(logger.isInfoEnabled())
+            logger.info("szCode : {} , szMsg : {}", szCode, szMsg);
 
         response.putHeader("szCode", szCode);
         response.putHeader("szMsg", szMsg);
@@ -39,11 +40,13 @@ public class XASessionEventHandler extends _IXASessionEvents {
 
     @Override
     public void logout() {
-        logger.warn("logout event receive");
+        if(logger.isInfoEnabled())
+            logger.info("logout event receive");
     }
 
     @Override
     public void disconnect() {
-        logger.warn("disconnect event receive");
+        if(logger.isInfoEnabled())
+            logger.info("disconnect event receive");
     }
 }

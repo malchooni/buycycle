@@ -45,9 +45,12 @@ public class EBestInitialization {
      * xa session 종료.
      */
     @PreDestroy
-    public void closeXASession(){
-        logger.info("======================");
-        logger.info("  Buycycle stopped... ");
-        logger.info("======================");
+    public void shutdown(){
+        XASessionManager.getInstance().shutdown();
+        if(logger.isInfoEnabled()){
+            logger.info("======================");
+            logger.info("  Buycycle stopped... ");
+            logger.info("======================");
+        }
     }
 }

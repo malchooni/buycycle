@@ -38,4 +38,4 @@ jobs:
       with:
         artifacts: D:/a/buycycle/buycycle/buycycle.zip
         token: ${{ secrets.TOKEN }}
-        tag: "1.0.2"
+        tag: "1.0.3"
