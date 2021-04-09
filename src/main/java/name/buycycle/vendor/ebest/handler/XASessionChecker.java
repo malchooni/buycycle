@@ -1,12 +1,10 @@
 package name.buycycle.vendor.ebest.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import name.buycycle.vendor.ebest.config.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
-import name.buycycle.vendor.ebest.session.XASessionManager;
+import name.buycycle.vendor.ebest.manage.XASessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Component;

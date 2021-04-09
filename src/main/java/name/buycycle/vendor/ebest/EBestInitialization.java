@@ -1,8 +1,9 @@
 package name.buycycle.vendor.ebest;
 
 import name.buycycle.vendor.ebest.config.vo.EBestConfig;
+import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
 import name.buycycle.vendor.ebest.message.MessageHelper;
-import name.buycycle.vendor.ebest.session.XASessionManager;
+import name.buycycle.vendor.ebest.manage.XASessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class EBestInitialization {
         messageHelper.initialize();
     }
 
+    /**
+     * 연결 관리자 초기화
+     */
     @PostConstruct
     public void xaSessionManager(){
         XASessionManager xaSessionManager = XASessionManager.getInstance();
@@ -41,12 +45,29 @@ public class EBestInitialization {
         xaSessionManager.start();
     }
 
+    @PostConstruct
+    public void xaRealSubscribeManager(){
+        XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
+        xaRealSubscribeManager.start();
+    }
+
     /**
      * xa session 종료.
      */
     @PreDestroy
     public void shutdown(){
-        XASessionManager.getInstance().shutdown();
+        XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
+        xaRealSubscribeManager.shutdown();
+        try {
+            xaRealSubscribeManager.join();
+        } catch (InterruptedException e) {}
+
+        XASessionManager xaSessionManager = XASessionManager.getInstance();
+        xaSessionManager.shutdown();
+        try {
+            xaSessionManager.join();
+        } catch (InterruptedException e) {}
+
         if(logger.isInfoEnabled()){
             logger.info("======================");
             logger.info("  Buycycle stopped... ");

@@ -1,16 +1,23 @@
-package name.buycycle.vendor.ebest.session;
+package name.buycycle.vendor.ebest.manage;
 
 import name.buycycle.vendor.ebest.config.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.exception.ConnectFailException;
 import name.buycycle.vendor.ebest.exception.RequestTimeOutException;
+import name.buycycle.vendor.ebest.session.XASession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class XASessionManager extends Thread{
+/**
+ * xa session 연결 관리자
+ */
+public class XASessionManager extends AbstractManager<String>{
 
-    private final Logger logger = LoggerFactory.getLogger(XASession.class);
+    private static final Logger logger = LoggerFactory.getLogger(XASessionManager.class);
     private static final XASessionManager instance = new XASessionManager();
+    public static XASessionManager getInstance(){
+        return instance;
+    }
 
     public static final String LOGIN = "LOGIN";
     public static final String CLOSE = "CLOSE";
@@ -18,26 +25,14 @@ public class XASessionManager extends Thread{
     public static final String TOUCH = "TOUCH";
     public static final String CHECK = "CHECK";
 
-    private final Object sessionMonitor;
-    private final XASessionCommand request;
-    private final XASessionCommand response;
-
     private EBestConfig eBestConfig;
-
-    private boolean running = true;
     private boolean succeedLogin = false;
-
     private long touchTime;
+    private XASession xaSession;
 
     private XASessionManager() {
-        super("XASessionManager");
-        this.sessionMonitor = new Object();
-        this.request = new XASessionCommand(10000);
-        this.response = new XASessionCommand(0);
-    }
-
-    public static XASessionManager getInstance(){
-        return instance;
+        super("XASessionManager", logger);
+        this.setRequestTimeOut(10000).setRequestTimeOutCommand(CHECK);
     }
 
     /**
@@ -61,20 +56,16 @@ public class XASessionManager extends Thread{
      * @return 응답 값
      */
     public Response login(){
-        synchronized (this.sessionMonitor){
-            this.request.put(LOGIN);
-            return this.response.take();
-        }
+        requestCommand(LOGIN);
+        return responseTake();
     }
 
     /**
      * 세션 종료 요청
      */
     public void close(){
-        synchronized (this.sessionMonitor){
-            if( this.succeedLogin){
-                this.request.put(CLOSE);
-            }
+        if( this.succeedLogin ){
+            requestCommand(CLOSE);
         }
     }
 
@@ -82,59 +73,47 @@ public class XASessionManager extends Thread{
      * 스레드 종료 요청
      */
     public void shutdown(){
-        synchronized (this.sessionMonitor){
-            this.request.put(SHUTDOWN);
-            try {
-                this.join();
-            } catch (InterruptedException ignored) {}
-        }
+        requestCommand(SHUTDOWN);
+        try {
+            this.join();
+        } catch (InterruptedException ignored) {}
     }
 
+    /**
+     * idle time 갱신
+     */
     public void touch(){
-        synchronized (this.sessionMonitor){
-            this.request.put(TOUCH);
-        }
+        requestCommand(TOUCH);
     }
 
     @Override
-    public void run() {
-        if(logger.isInfoEnabled())
-            logger.info("XASessionManager started..");
-
-        XASession xaSession = new XASession(this.eBestConfig);
+    void init() {
+        this.xaSession = new XASession(this.eBestConfig);
         this.touchRequest();
+    }
 
-        while(running){
-            try{
-                String command = this.request.take();
-                switch (command){
-                    case LOGIN:
-                        this.loginRequest(xaSession);
-                        break;
-                    case CLOSE:
-                        this.closeRequest(xaSession);
-                        break;
-                    case SHUTDOWN:
-                        this.shutdownRequest(xaSession);
-                        break;
-                    case TOUCH:
-                        this.touchRequest();
-                        break;
-                    case CHECK:
-                        this.checkRequest(xaSession);
-                        break;
-                    default:
-                        if(logger.isErrorEnabled())
-                            logger.error("unsupported operation", new UnsupportedOperationException(command));
-                }
-            }catch (Exception e){
+    @Override
+    void request(String command) throws Exception{
+        switch (command){
+            case LOGIN:
+                this.loginRequest(this.xaSession);
+                break;
+            case CLOSE:
+                this.closeRequest(this.xaSession);
+                break;
+            case SHUTDOWN:
+                this.shutdownRequest(this.xaSession);
+                break;
+            case TOUCH:
+                this.touchRequest();
+                break;
+            case CHECK:
+                this.checkRequest(this.xaSession);
+                break;
+            default:
                 if(logger.isErrorEnabled())
-                    logger.error(e.getMessage(), e);
-            }
+                    logger.error("unsupported operation", new UnsupportedOperationException(command));
         }
-
-        if(logger.isInfoEnabled())
-            logger.info("XASessionManager shutdown done..");
     }
 
     /**
@@ -155,9 +134,9 @@ public class XASessionManager extends Thread{
             if(response != null && response.getHeader("szCode").equals("0000")) {
                 this.succeedLogin = true;
             }
-            this.response.put(response);
+            responseCommand(response);
         }else{
-            this.response.put(null);
+            responseCommand(null);
         }
 
     }
@@ -185,7 +164,7 @@ public class XASessionManager extends Thread{
         if(isSucceedLogin()){
             this.closeRequest(xaSession);
         }
-        this.running = false;
+        setRunning(false);
     }
 
     /**
