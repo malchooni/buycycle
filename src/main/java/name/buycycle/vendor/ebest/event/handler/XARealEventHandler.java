@@ -2,7 +2,7 @@ package name.buycycle.vendor.ebest.event.handler;
 
 import name.buycycle.vendor.ebest.event.com4j._IXARealEvents;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
-import name.buycycle.vendor.ebest.session.XASessionManager;
+import name.buycycle.vendor.ebest.manage.XASessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
