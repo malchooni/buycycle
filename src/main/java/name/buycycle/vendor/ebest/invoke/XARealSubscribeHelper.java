@@ -1,6 +1,7 @@
 package name.buycycle.vendor.ebest.invoke;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com4j.COM4J;
 import com4j.EventCookie;
 import name.buycycle.vendor.ebest.config.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.com4j.IXAReal;
@@ -11,6 +12,7 @@ import name.buycycle.vendor.ebest.event.vo.req.RequestBody;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.event.xaobject.XAObjectHelper;
 import name.buycycle.vendor.ebest.event.xaobject.vo.XAObject;
+import name.buycycle.vendor.ebest.manage.command.XARealSubscribeCommand;
 import name.buycycle.vendor.ebest.message.MessageHelper;
 import name.buycycle.vendor.ebest.message.ResFileData;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * xa real 이벤트 수신 스레드
@@ -33,16 +36,22 @@ public class XARealSubscribeHelper extends Thread {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private MessageHelper messageHelper = MessageHelper.getInstance();
 
-    private EBestConfig eBestConfig;
-    private WebSocketSession webSocketSession;
-    private Request request;
     private boolean running = true;
-    private ObjectMapper objectMapper;
 
-    public XARealSubscribeHelper(EBestConfig eBestConfig, WebSocketSession webSocketSession, Request request) {
-        this.eBestConfig = eBestConfig;
-        this.webSocketSession = webSocketSession;
-        this.request = request;
+    private WebSocketSession webSocketSession;
+    private EBestConfig eBestConfig;
+    private Request request;
+
+    private ObjectMapper objectMapper;
+    private XARealEventHandler xaRealEventHandler;
+
+    private static final AtomicInteger atomicInteger = new AtomicInteger();
+
+    public XARealSubscribeHelper(XARealSubscribeCommand command) {
+        super("XARealSubscribeHelper-" + atomicInteger.incrementAndGet());
+        this.webSocketSession = command.getSession();
+        this.eBestConfig = command.getEBestConfig();
+        this.request = command.getRequest();
         this.objectMapper = new ObjectMapper();
         this.setDaemon(true);
     }
@@ -57,7 +66,7 @@ public class XARealSubscribeHelper extends Thread {
 
         try{
             ResFileData resFileData = messageHelper.getResFileData(ResFileData.REAL, requestBody.getTrName());
-            XARealEventHandler xaRealEventHandler = new XARealEventHandler(request.getHeader().getUuid());
+            xaRealEventHandler = new XARealEventHandler(request.getHeader().getUuid());
             xaObject  = XAObjectHelper.createXAObject(eBestConfig.getResRootPath(), resFileData, _IXARealEvents.class, xaRealEventHandler);
             ixaReal = xaObject.getIxaType();
 
@@ -66,7 +75,11 @@ public class XARealSubscribeHelper extends Thread {
 
             while(isRunning()){
                 synchronized (xaRealEventHandler){
-                    xaRealEventHandler.wait(eBestConfig.getConnect().getRequestReadTimeOut());
+                    try{
+                        xaRealEventHandler.wait(eBestConfig.getConnect().getRequestReadTimeOut());
+                    }catch (InterruptedException ie){
+                        continue;
+                    }
                 }
 
                 response = xaRealEventHandler.getResponse();
@@ -80,6 +93,8 @@ public class XARealSubscribeHelper extends Thread {
 
                 webSocketSession.sendMessage(new TextMessage(responseStr));
             }
+
+            logger.info("XARealSubscribeHelper process end.");
         }catch (Exception e){
             if(logger.isErrorEnabled())
                 logger.error(e.getMessage(), e);
@@ -91,12 +106,21 @@ public class XARealSubscribeHelper extends Thread {
                 EventCookie eventCookie = xaObject.getEventCookie();
                 if(eventCookie != null)
                     eventCookie.close();
+
+                COM4J.cleanUp();
             }
         }
     }
 
     public boolean isRunning() {
         return running;
+    }
+
+    public void shutdown(){
+        this.running = false;
+        synchronized (xaRealEventHandler){
+            this.xaRealEventHandler.notify();
+        }
     }
 
     /**

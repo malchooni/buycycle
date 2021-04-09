@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import name.buycycle.vendor.ebest.config.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import name.buycycle.vendor.ebest.invoke.XARealSubscribeHelper;
+import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class XARealWebSocketHandler extends TextWebSocketHandler {
 
     private Logger logger = LoggerFactory.getLogger(XARealWebSocketHandler.class);
+    private XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
+
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -57,7 +60,6 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
             logger.debug(" => request message \n---\n{}\n---", requestJsonMessage);
 
         Request request = objectMapper.readValue(requestJsonMessage, Request.class);
-
-        new XARealSubscribeHelper(eBestConfig, session, request).start();
+        xaRealSubscribeManager.realTrRequest(session, eBestConfig, request);
     }
 }
