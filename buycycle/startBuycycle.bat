@@ -1,1 +1,1 @@
-java -Djava.library.path=./lib -jar ./lib/buycycle-1.0.4.jargit
+java -Djava.library.path=./lib -jar ./lib/buycycle-1.0.4.jar
