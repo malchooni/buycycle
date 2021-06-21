@@ -1,6 +1,6 @@
 package name.buycycle.vendor.ebest.manage;
 
-import name.buycycle.vendor.ebest.config.vo.EBestConfig;
+import name.buycycle.config.ebest.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import name.buycycle.vendor.ebest.invoke.XARealSubscribeHelper;
 import name.buycycle.vendor.ebest.manage.command.XARealSubscribeCommand;

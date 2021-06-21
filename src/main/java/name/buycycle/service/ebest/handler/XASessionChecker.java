@@ -1,4 +1,4 @@
-package name.buycycle.vendor.ebest.handler;
+package name.buycycle.service.ebest.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import name.buycycle.vendor.ebest.event.vo.res.Response;

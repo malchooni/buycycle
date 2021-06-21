@@ -1,4 +1,4 @@
-package name.buycycle.vendor.ebest.data.vo;
+package name.buycycle.service.ebest.vo;
 
 import java.util.List;
 import java.util.Map;

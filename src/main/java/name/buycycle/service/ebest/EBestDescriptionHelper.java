@@ -1,9 +1,9 @@
-package name.buycycle.vendor.ebest.data;
+package name.buycycle.service.ebest;
 
-import name.buycycle.controller.data.vo.TableHeader;
-import name.buycycle.controller.data.vo.ResTable;
-import name.buycycle.vendor.ebest.data.vo.ResDesc;
-import name.buycycle.vendor.ebest.data.vo.TableHeaderItem;
+import name.buycycle.controller.vo.TableHeader;
+import name.buycycle.controller.vo.ResTable;
+import name.buycycle.service.ebest.vo.ResDesc;
+import name.buycycle.service.ebest.vo.TableHeaderItem;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import name.buycycle.vendor.ebest.event.vo.req.RequestBody;
 import name.buycycle.vendor.ebest.event.vo.req.RequestHeader;

@@ -3,7 +3,7 @@ package name.buycycle.vendor.ebest.invoke;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com4j.COM4J;
 import com4j.EventCookie;
-import name.buycycle.vendor.ebest.config.vo.EBestConfig;
+import name.buycycle.config.ebest.EBestConfig;
 import name.buycycle.vendor.ebest.event.com4j.IXAReal;
 import name.buycycle.vendor.ebest.event.com4j._IXARealEvents;
 import name.buycycle.vendor.ebest.event.handler.XARealEventHandler;
