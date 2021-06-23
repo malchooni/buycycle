@@ -5,10 +5,10 @@
       <v-tab> xaQuery 요청 / 응답 </v-tab>
 
       <v-tab-item>
-        <real ref="realTable" restype="real"></real>
+        <real ref="realTable" restype="realtime"></real>
       </v-tab-item>
       <v-tab-item eager>
-        <query ref="queryTable" restype="query"></query>
+        <query ref="queryTable" restype="queries"></query>
       </v-tab-item>
     </v-tabs>
   </v-container>
@@ -35,7 +35,7 @@ export default {
   methods:{
     getRealList() {
       axios
-        .post('/data/ebest/list/real')
+        .get('/ebest/description/realtime')
         .then(response => {
           if (response && response.data !== null) {
             this.$refs.realTable.setData(response.data);
@@ -48,7 +48,7 @@ export default {
     },
     getQueryList() {
       axios
-        .post('/data/ebest/list/query')
+        .get('/ebest/description/queries')
         .then(response => {
           if (response && response.data !== null) {
             this.$refs.queryTable.setData(response.data);

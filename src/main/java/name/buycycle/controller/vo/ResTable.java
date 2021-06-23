@@ -1,6 +1,6 @@
-package name.buycycle.controller.data.vo;
+package name.buycycle.controller.vo;
 
-import name.buycycle.vendor.ebest.data.vo.TableHeaderItem;
+import name.buycycle.service.ebest.vo.TableHeaderItem;
 
 import java.util.LinkedList;
 import java.util.List;

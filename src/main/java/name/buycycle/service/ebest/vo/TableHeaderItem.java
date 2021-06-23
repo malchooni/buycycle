@@ -1,4 +1,4 @@
-package name.buycycle.vendor.ebest.data.vo;
+package name.buycycle.service.ebest.vo;
 
 /**
  * 테이블 목록 vo

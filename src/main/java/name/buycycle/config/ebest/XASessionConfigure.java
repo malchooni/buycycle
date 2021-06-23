@@ -1,6 +1,6 @@
-package name.buycycle.vendor.ebest.config;
+package name.buycycle.config.ebest;
 
-import name.buycycle.vendor.ebest.handler.XASessionChecker;
+import name.buycycle.service.ebest.handler.XASessionChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -18,6 +18,6 @@ public class XASessionConfigure implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(xaSessionChecker)
-                .addPathPatterns("/data/ebest/real", "/data/ebest/query");
+                .addPathPatterns("/ebest/realtime", "/ebest/queries");
     }
 }

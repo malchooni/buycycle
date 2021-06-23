@@ -102,13 +102,13 @@ export default {
       this.dialog = true;
       this.getDescription(item);
       this.getDefaultReqMsg(item);
-      if (this.restype === "real") {
+      if (this.restype === "realtime") {
         this.connectWebSocket();
       }
     },
     getDescription: function (item) {
       axios
-        .post("/data/ebest/list/" + this.restype + "/" + item.name)
+        .get("/ebest/description/" + this.restype + "/" + item.name)
         .then((response) => {
           if (response && response.data !== null) {
             this.resdesc = response.data.resDesc;
@@ -120,7 +120,7 @@ export default {
     },
     getDefaultReqMsg: function (item) {
       axios
-        .post("/data/ebest/requestmessage/" + item.name)
+        .get("/ebest/request-messages/" + item.name)
         .then((response) => {
           if (response && response.data !== null) {
             this.$refs.testbox.setReqMsg(
@@ -134,7 +134,7 @@ export default {
     },
     connectWebSocket: function () {      
       const that = this;
-      this.ws = new WebSocket("ws://" + location.host + "/data/ebest/real");
+      this.ws = new WebSocket("ws://" + location.host + "/ebest/realtime");
       this.ws.testbox = this.$refs.testbox;
       this.ws.onopen = function (e) {
         console.log("connect success");
@@ -160,10 +160,10 @@ export default {
     },
     request: function () {
       switch (this.restype) {
-        case "real":
+        case "realtime":
           this.requestReal();
           break;
-        case "query":
+        case "queries":
           this.requestQuery();
           break;
       }
@@ -173,7 +173,7 @@ export default {
     },
     requestQuery: function () {
       axios
-        .post("/data/ebest/query", this.$refs.testbox.reqmsg, {
+        .post("/ebest/queries", this.$refs.testbox.reqmsg, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -193,7 +193,7 @@ export default {
       this.dialog = false;
       this.resdesc = null;
       this.tabs = 0;
-      if (this.restype === "real") {
+      if (this.restype === "realtime") {
         this.ws.close(1000, "test done.");
         this.ws = null;
       }
