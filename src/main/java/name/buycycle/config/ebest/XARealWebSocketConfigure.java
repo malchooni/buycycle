@@ -1,7 +1,7 @@
-package name.buycycle.vendor.ebest.config;
+package name.buycycle.config.ebest;
 
-import name.buycycle.vendor.ebest.handler.XARealWebSocketHandler;
-import name.buycycle.vendor.ebest.handler.XASessionChecker;
+import name.buycycle.service.ebest.handler.XARealWebSocketHandler;
+import name.buycycle.service.ebest.handler.XASessionChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -24,7 +24,7 @@ public class XARealWebSocketConfigure implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         webSocketHandlerRegistry
-                .addHandler(xaRealWebSocketHandler, "/data/ebest/real")
+                .addHandler(xaRealWebSocketHandler, "/ebest/realtime")
                 .addInterceptors(xaSessionChecker)
                 .setAllowedOrigins("*");
     }

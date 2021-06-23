@@ -1,5 +1,7 @@
-package name.buycycle.vendor.ebest.config.vo;
+package name.buycycle.config.ebest;
 
+import name.buycycle.vendor.ebest.config.vo.Connect;
+import name.buycycle.vendor.ebest.config.vo.User;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.context.annotation.Configuration;

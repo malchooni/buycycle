@@ -1,7 +1,6 @@
 package name.buycycle.vendor.ebest.invoke;
 
 import com4j.COM4J;
-import com4j.ComThread;
 import name.buycycle.vendor.ebest.event.com4j.IXAQuery;
 import name.buycycle.vendor.ebest.event.com4j._IXAQueryEvents;
 import name.buycycle.vendor.ebest.event.handler.XAQueryEventHandler;
@@ -12,7 +11,7 @@ import name.buycycle.vendor.ebest.event.xaobject.XAObjectHelper;
 import name.buycycle.vendor.ebest.event.xaobject.vo.XAObject;
 import name.buycycle.vendor.ebest.message.MessageHelper;
 import name.buycycle.vendor.ebest.message.ResFileData;
-import name.buycycle.vendor.ebest.config.vo.EBestConfig;
+import name.buycycle.config.ebest.EBestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

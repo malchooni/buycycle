@@ -20,45 +20,45 @@
               <th>내용</th>
             </tr>
             <tr>
-              <td>HTTP</td>
+              <td>HTTP - GET</td>
               <td>Json</td>
-              <td>/data/ebest/list/real</td>
+              <td>/ebest/description/realtime</td>
               <td>XAReal TR 목록을 반환 한다.</td>
             </tr>
             <tr>
-              <td>HTTP</td>
+              <td>HTTP - GET</td>
               <td>Json</td>
-              <td>/data/ebest/list/real/{trName}</td>
+              <td>/ebest/description/realtime/{trName}</td>
               <td>XAReal 특정 TR의 명세를 반환 한다.</td>
             </tr>
             <tr>
-              <td>HTTP</td>
+              <td>HTTP - GET</td>
               <td>Json</td>
-              <td>/data/ebest/list/query</td>
+              <td>/ebest/description/queries</td>
               <td>XAQuery TR 목록을 반환 한다.</td>
             </tr>
             <tr>
-              <td>HTTP</td>
+              <td>HTTP - GET</td>
               <td>Json</td>
-              <td>/data/ebest/list/query/{trName}</td>
+              <td>/ebest/description/queries/{trName}</td>
               <td>XAQuery 특정 TR의 명세를 반환 한다.</td>
             </tr>
             <tr>
-              <td>HTTP</td>
+              <td>HTTP - GET</td>
               <td>Json</td>
-              <td>/data/ebest/requestmessage/{trName}</td>
+              <td>/ebest/request-messages/{trName}</td>
               <td>특정 TR의 요청 샘플 메시지를 반환 한다.</td>
             </tr>
             <tr>
               <td>HTTP - POST <br/> Content-Type: application/json</td>
               <td>Json</td>
-              <td>/data/ebest/query</td>
+              <td>/ebest/queries</td>
               <td>XAQuery (Reqest/Response) TR을 호출 한다.</td>
             </tr>
             <tr>
               <td>WebSocket</td>
               <td>Json</td>
-              <td>/data/ebest/real</td>
+              <td>/ebest/real</td>
               <td>XAReal TR을 호출 한다.</td>
             </tr>
           </table>
