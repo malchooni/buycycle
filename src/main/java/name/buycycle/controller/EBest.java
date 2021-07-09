@@ -12,6 +12,10 @@ import name.buycycle.vendor.ebest.message.ResFileData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -102,11 +106,15 @@ public class EBest {
      * @return 대상 TR 명세서
      */
     @GetMapping("/description/queries/{trName}")
-    ResponseEntity<ResDesc> listQuery(@PathVariable String trName) {
+    ResponseEntity<EntityModel<ResDesc>> listQuery(@PathVariable String trName) {
         if(logger.isInfoEnabled())
             logger.info("[{}] Query 명세 요청", trName);
         ResDesc result =  eBestDescriptionHelper.resDesc(trName);
-        return ResponseEntity.ok(result);
+
+        return ResponseEntity.ok(
+                EntityModel.of(result)
+                .add( WebMvcLinkBuilder.linkTo( WebMvcLinkBuilder.methodOn(EBest.class).listQuery() ).withSelfRel())
+        );
     }
 
     /**
