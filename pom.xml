@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>name.buycycle</groupId>
 	<artifactId>buycycle</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 	<name>buycycle</name>
 	<packaging>jar</packaging>
 
@@ -32,6 +32,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
 		</dependency>
 
 		<dependency>
