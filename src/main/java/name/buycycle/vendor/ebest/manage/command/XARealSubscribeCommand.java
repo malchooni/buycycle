@@ -1,6 +1,6 @@
 package name.buycycle.vendor.ebest.manage.command;
 
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import org.springframework.web.socket.WebSocketSession;
 

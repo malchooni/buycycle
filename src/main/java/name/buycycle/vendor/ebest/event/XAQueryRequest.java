@@ -1,6 +1,7 @@
-package name.buycycle.vendor.ebest.invoke;
+package name.buycycle.vendor.ebest.event;
 
 import com4j.COM4J;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.com4j.IXAQuery;
 import name.buycycle.vendor.ebest.event.com4j._IXAQueryEvents;
 import name.buycycle.vendor.ebest.event.handler.XAQueryEventHandler;
@@ -11,11 +12,8 @@ import name.buycycle.vendor.ebest.event.xaobject.XAObjectHelper;
 import name.buycycle.vendor.ebest.event.xaobject.vo.XAObject;
 import name.buycycle.vendor.ebest.message.MessageHelper;
 import name.buycycle.vendor.ebest.message.ResFileData;
-import name.buycycle.config.ebest.EBestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,14 +25,16 @@ import java.util.Set;
  * @author : ijyoon
  * @date : 2021/03/24
  */
-@Component
-public class XAQueryRequestHelper {
+public class XAQueryRequest {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private final MessageHelper messageHelper = MessageHelper.getInstance();
 
-    @Autowired
     private EBestConfig eBestConfig;
+
+    public XAQueryRequest(EBestConfig eBestConfig) {
+        this.eBestConfig = eBestConfig;
+    }
 
     /**
      * xa query 요청, 응답

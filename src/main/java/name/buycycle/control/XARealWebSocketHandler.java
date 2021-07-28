@@ -1,8 +1,8 @@
-package name.buycycle.service.ebest.handler;
+package name.buycycle.control;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
 import org.slf4j.Logger;

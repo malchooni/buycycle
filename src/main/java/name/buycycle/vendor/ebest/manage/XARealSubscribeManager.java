@@ -1,8 +1,8 @@
 package name.buycycle.vendor.ebest.manage;
 
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
-import name.buycycle.vendor.ebest.invoke.XARealSubscribeHelper;
+import name.buycycle.vendor.ebest.event.XARealSubscribe;
 import name.buycycle.vendor.ebest.manage.command.XARealSubscribeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     public static final String REQUEST = "REQUEST";
     public static final String SHUTDOWN = "SHUTDOWN";
 
-    private List<XARealSubscribeHelper> threadList;
+    private List<XARealSubscribe> threadList;
 
     private XARealSubscribeManager() {
         super("XARealSubscribeManager", logger);
@@ -64,7 +64,7 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     }
 
     public void realTrRequestProcess(XARealSubscribeCommand command){
-        XARealSubscribeHelper helper = new XARealSubscribeHelper(command);
+        XARealSubscribe helper = new XARealSubscribe(command);
         helper.start();
         threadList.add(helper);
     }

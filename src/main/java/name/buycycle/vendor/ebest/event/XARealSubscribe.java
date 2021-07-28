@@ -1,9 +1,9 @@
-package name.buycycle.vendor.ebest.invoke;
+package name.buycycle.vendor.ebest.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com4j.COM4J;
 import com4j.EventCookie;
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.com4j.IXAReal;
 import name.buycycle.vendor.ebest.event.com4j._IXARealEvents;
 import name.buycycle.vendor.ebest.event.handler.XARealEventHandler;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author : ijyoon
  * @date : 2021/03/24
  */
-public class XARealSubscribeHelper extends Thread {
+public class XARealSubscribe extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private MessageHelper messageHelper = MessageHelper.getInstance();
@@ -47,7 +47,7 @@ public class XARealSubscribeHelper extends Thread {
 
     private static final AtomicInteger atomicInteger = new AtomicInteger();
 
-    public XARealSubscribeHelper(XARealSubscribeCommand command) {
+    public XARealSubscribe(XARealSubscribeCommand command) {
         super("XARealSubscribeHelper-" + atomicInteger.incrementAndGet());
         this.webSocketSession = command.getSession();
         this.eBestConfig = command.getEBestConfig();

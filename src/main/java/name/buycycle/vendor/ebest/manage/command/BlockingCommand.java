@@ -1,4 +1,4 @@
-package name.buycycle.process.command;
+package name.buycycle.vendor.ebest.manage.command;
 
 public class BlockingCommand {
     private Object command;

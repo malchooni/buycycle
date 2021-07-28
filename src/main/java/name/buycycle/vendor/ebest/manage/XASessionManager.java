@@ -1,6 +1,6 @@
 package name.buycycle.vendor.ebest.manage;
 
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.exception.ConnectFailException;
 import name.buycycle.vendor.ebest.exception.RequestTimeOutException;

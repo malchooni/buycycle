@@ -1,6 +1,6 @@
 package name.buycycle.vendor.ebest.manage;
 
-import name.buycycle.process.command.BlockingCommand;
+import name.buycycle.vendor.ebest.manage.command.BlockingCommand;
 import org.slf4j.Logger;
 
 abstract class AbstractManager<T> extends Thread{

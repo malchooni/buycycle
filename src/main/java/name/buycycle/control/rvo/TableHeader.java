@@ -1,4 +1,4 @@
-package name.buycycle.controller.vo;
+package name.buycycle.control.rvo;
 
 /**
  * table header data by vuetify v-data-table

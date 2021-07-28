@@ -1,13 +1,14 @@
-package name.buycycle.controller;
+package name.buycycle.control;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import name.buycycle.controller.vo.ResTable;
-import name.buycycle.service.ebest.EBestDescriptionHelper;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
+import name.buycycle.control.rvo.ResTable;
+import name.buycycle.service.ebest.EBestDescription;
 import name.buycycle.service.ebest.vo.ResDesc;
+import name.buycycle.vendor.ebest.event.XAQueryRequest;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
-import name.buycycle.vendor.ebest.invoke.XAQueryRequestHelper;
 import name.buycycle.vendor.ebest.message.ResFileData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * 이베스트 컨트롤러
@@ -24,7 +26,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
  */
 @RestController
 @RequestMapping("/ebest")
-public class EBest {
+public class EBestController {
 
     private final static String REAL_TR_LIST = "real_tr_list"; // real tr 목록
     private final static String REAL_TR_DESC = "real_tr_desc"; // real tr 상세
@@ -37,9 +39,14 @@ public class EBest {
     private final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     @Autowired
-    private XAQueryRequestHelper xaQueryRequestHelper;
+    private EBestConfig eBestConfig;
     @Autowired
-    private EBestDescriptionHelper eBestDescriptionHelper;
+    private EBestDescription eBestDescription;
+    private XAQueryRequest xaQueryRequest;
+
+    public EBestController() {
+        this.xaQueryRequest = new XAQueryRequest(eBestConfig);
+    }
 
     /**
      * xing api 호출
@@ -54,14 +61,14 @@ public class EBest {
         if(logger.isDebugEnabled())
             logger.debug(" => request message \n---\n{}\n---", objectMapper.writeValueAsString(request));
 
-        Response response = xaQueryRequestHelper.requestQuery(request);
+        Response response = xaQueryRequest.requestQuery(request);
 
         if(logger.isDebugEnabled())
             logger.debug(" <= response message \n---\n{}\n---", objectMapper.writeValueAsString(response));
 
         return ResponseEntity.ok(
                 EntityModel.of(response)
-                        .add( linkTo( methodOn(EBest.class).queryRequest(null)).withSelfRel())
+                        .add( linkTo( methodOn(EBestController.class).queryRequest(null)).withSelfRel())
         );
     }
 
@@ -75,12 +82,12 @@ public class EBest {
         if(logger.isInfoEnabled())
             logger.info("Real 목록 요청");
 
-        ResTable result = eBestDescriptionHelper.resList(ResFileData.REAL);
+        ResTable result = eBestDescription.resList(ResFileData.REAL);
         return ResponseEntity.ok(
                 EntityModel.of(result)
-                        .add( linkTo( methodOn(EBest.class).listReal()).withSelfRel())
-                        .add( linkTo( methodOn(EBest.class).listReal(null)).withRel(REAL_TR_DESC))
-                        .add( linkTo( methodOn(EBest.class).requestMessage(null)).withRel(REQUEST_MESSAGE))
+                        .add( linkTo( methodOn(EBestController.class).listReal()).withSelfRel())
+                        .add( linkTo( methodOn(EBestController.class).listReal(null)).withRel(REAL_TR_DESC))
+                        .add( linkTo( methodOn(EBestController.class).requestMessage(null)).withRel(REQUEST_MESSAGE))
         );
     }
 
@@ -94,13 +101,13 @@ public class EBest {
         if(logger.isInfoEnabled())
             logger.info("Query 목록 요청");
 
-        ResTable result = eBestDescriptionHelper.resList(ResFileData.QUERY);
+        ResTable result = eBestDescription.resList(ResFileData.QUERY);
 
         return ResponseEntity.ok(
                 EntityModel.of(result)
-                        .add( linkTo( methodOn(EBest.class).listQuery()).withSelfRel())
-                        .add( linkTo( methodOn(EBest.class).listQuery(null)).withRel(QUERY_TR_DESC))
-                        .add( linkTo( methodOn(EBest.class).requestMessage(null)).withRel(REQUEST_MESSAGE))
+                        .add( linkTo( methodOn(EBestController.class).listQuery()).withSelfRel())
+                        .add( linkTo( methodOn(EBestController.class).listQuery(null)).withRel(QUERY_TR_DESC))
+                        .add( linkTo( methodOn(EBestController.class).requestMessage(null)).withRel(REQUEST_MESSAGE))
         );
     }
 
@@ -115,13 +122,13 @@ public class EBest {
         if(logger.isInfoEnabled())
             logger.info("[{}] Real 명세 요청", trName);
 
-        ResDesc result = eBestDescriptionHelper.resDesc(trName);
+        ResDesc result = eBestDescription.resDesc(trName);
 
         return ResponseEntity.ok(
                 EntityModel.of(result)
-                        .add( linkTo( methodOn(EBest.class).listReal(trName)).withSelfRel())
-                        .add( linkTo( methodOn(EBest.class).listReal()).withRel(REAL_TR_LIST))
-                        .add( linkTo( methodOn(EBest.class).requestMessage(trName)).withRel(REQUEST_MESSAGE))
+                        .add( linkTo( methodOn(EBestController.class).listReal(trName)).withSelfRel())
+                        .add( linkTo( methodOn(EBestController.class).listReal()).withRel(REAL_TR_LIST))
+                        .add( linkTo( methodOn(EBestController.class).requestMessage(trName)).withRel(REQUEST_MESSAGE))
         );
     }
 
@@ -135,14 +142,14 @@ public class EBest {
     ResponseEntity<EntityModel<ResDesc>> listQuery(@PathVariable String trName) throws Exception {
         if(logger.isInfoEnabled())
             logger.info("[{}] Query 명세 요청", trName);
-        ResDesc result =  eBestDescriptionHelper.resDesc(trName);
+        ResDesc result =  eBestDescription.resDesc(trName);
 
         return ResponseEntity.ok(
                 EntityModel.of(result)
-                        .add( linkTo( methodOn(EBest.class).listQuery(trName)).withSelfRel())
-                        .add( linkTo( methodOn(EBest.class).listQuery()).withRel(QUERY_TR_LIST))
-                        .add( linkTo( methodOn(EBest.class).requestMessage(trName)).withRel(REQUEST_MESSAGE))
-                        .add( linkTo( methodOn(EBest.class).queryRequest(null)).withRel(REQUEST))
+                        .add( linkTo( methodOn(EBestController.class).listQuery(trName)).withSelfRel())
+                        .add( linkTo( methodOn(EBestController.class).listQuery()).withRel(QUERY_TR_LIST))
+                        .add( linkTo( methodOn(EBestController.class).requestMessage(trName)).withRel(REQUEST_MESSAGE))
+                        .add( linkTo( methodOn(EBestController.class).queryRequest(null)).withRel(REQUEST))
         );
     }
 
@@ -155,12 +162,12 @@ public class EBest {
     ResponseEntity<EntityModel<Request>> requestMessage(@PathVariable String trName) throws Exception {
         if(logger.isInfoEnabled())
             logger.info("[{}] 요청 메시지 샘플", trName);
-        Request result = eBestDescriptionHelper.requestMessage(trName);
+        Request result = eBestDescription.requestMessage(trName);
 
         return ResponseEntity.ok(
                 EntityModel.of(result)
-                    .add( linkTo( methodOn(EBest.class).requestMessage(trName)).withSelfRel())
-                    .add( linkTo( methodOn(EBest.class).queryRequest(null)).withRel(REQUEST))
+                    .add( linkTo( methodOn(EBestController.class).requestMessage(trName)).withSelfRel())
+                    .add( linkTo( methodOn(EBestController.class).queryRequest(null)).withRel(REQUEST))
         );
     }
 }

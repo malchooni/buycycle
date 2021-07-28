@@ -1,6 +1,6 @@
-package name.buycycle.service.ebest;
+package name.buycycle.configuration.ebest;
 
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
 import name.buycycle.vendor.ebest.message.MessageHelper;
 import name.buycycle.vendor.ebest.manage.XASessionManager;
