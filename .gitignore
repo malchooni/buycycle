@@ -36,3 +36,4 @@ build/
 logs/*.log
 **/buycycle.pid
 **/static/**
+**/resources/application.yaml

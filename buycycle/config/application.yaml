@@ -5,6 +5,10 @@ server:
 logging:
   config: ./config/logback.xml
 
+spring:
+  application:
+    name: buycycle
+
 management:
   endpoints:
     web:
@@ -13,6 +17,11 @@ management:
   endpoint:
     shutdown:
       enabled: true
+
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone:
 
 ebest:
   resRootPath: 'C:\\eBEST\\xingAPI\\Res'
