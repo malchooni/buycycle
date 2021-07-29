@@ -1,6 +1,7 @@
 package name.buycycle.configuration.ebest;
 
 import name.buycycle.configuration.ebest.vo.EBestConfig;
+import name.buycycle.vendor.ebest.manage.XAQueryManager;
 import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
 import name.buycycle.vendor.ebest.message.MessageHelper;
 import name.buycycle.vendor.ebest.manage.XASessionManager;
@@ -48,7 +49,15 @@ public class EBestInitialization {
     @PostConstruct
     public void xaRealSubscribeManager(){
         XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
+        xaRealSubscribeManager.setEBestConfig(eBestConfig);
         xaRealSubscribeManager.start();
+    }
+
+    @PostConstruct
+    public void xaQueryManager(){
+        XAQueryManager xaQueryManager = XAQueryManager.getInstance();
+        xaQueryManager.setEBestConfig(eBestConfig);
+        xaQueryManager.initialize();
     }
 
     /**

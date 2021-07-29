@@ -2,13 +2,12 @@ package name.buycycle.control;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.control.rvo.ResTable;
 import name.buycycle.service.ebest.EBestDescription;
 import name.buycycle.service.ebest.vo.ResDesc;
-import name.buycycle.vendor.ebest.event.XAQueryRequest;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
+import name.buycycle.vendor.ebest.manage.XAQueryManager;
 import name.buycycle.vendor.ebest.message.ResFileData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +37,10 @@ public class EBestController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
-    @Autowired
-    private EBestConfig eBestConfig;
+    private XAQueryManager xaQueryManager = XAQueryManager.getInstance();
+
     @Autowired
     private EBestDescription eBestDescription;
-    private XAQueryRequest xaQueryRequest;
-
-    public EBestController() {
-        this.xaQueryRequest = new XAQueryRequest(eBestConfig);
-    }
 
     /**
      * xing api 호출
@@ -61,7 +55,7 @@ public class EBestController {
         if(logger.isDebugEnabled())
             logger.debug(" => request message \n---\n{}\n---", objectMapper.writeValueAsString(request));
 
-        Response response = xaQueryRequest.requestQuery(request);
+        Response response = this.xaQueryManager.requestQuery(request);
 
         if(logger.isDebugEnabled())
             logger.debug(" <= response message \n---\n{}\n---", objectMapper.writeValueAsString(response));

@@ -1,8 +1,8 @@
 package name.buycycle.vendor.ebest.manage.command;
 
 import name.buycycle.configuration.ebest.vo.EBestConfig;
+import name.buycycle.vendor.ebest.event.XARealResponseEvent;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
-import org.springframework.web.socket.WebSocketSession;
 
 /**
  * XARealSubscribeManager 제어를 위한 명령어 오브젝트
@@ -10,9 +10,9 @@ import org.springframework.web.socket.WebSocketSession;
 public class XARealSubscribeCommand {
 
     private String command;
-    private WebSocketSession session;
     private EBestConfig eBestConfig;
     private Request request;
+    private XARealResponseEvent xaRealResponseEvent;
 
     public XARealSubscribeCommand(String command) {
         this.command = command;
@@ -27,12 +27,21 @@ public class XARealSubscribeCommand {
         return this;
     }
 
-    public WebSocketSession getSession() {
-        return session;
+    public EBestConfig geteBestConfig() {
+        return eBestConfig;
     }
 
-    public XARealSubscribeCommand setSession(WebSocketSession session) {
-        this.session = session;
+    public XARealSubscribeCommand seteBestConfig(EBestConfig eBestConfig) {
+        this.eBestConfig = eBestConfig;
+        return this;
+    }
+
+    public XARealResponseEvent getXaRealResponseEvent() {
+        return xaRealResponseEvent;
+    }
+
+    public XARealSubscribeCommand setXaRealResponseEvent(XARealResponseEvent xaRealResponseEvent) {
+        this.xaRealResponseEvent = xaRealResponseEvent;
         return this;
     }
 

@@ -38,9 +38,9 @@ public class XARealSubscribe extends Thread {
 
     private boolean running = true;
 
-    private WebSocketSession webSocketSession;
     private EBestConfig eBestConfig;
     private Request request;
+    private XARealResponseEvent xaRealResponseEvent;
 
     private ObjectMapper objectMapper;
     private XARealEventHandler xaRealEventHandler;
@@ -49,7 +49,7 @@ public class XARealSubscribe extends Thread {
 
     public XARealSubscribe(XARealSubscribeCommand command) {
         super("XARealSubscribeHelper-" + atomicInteger.incrementAndGet());
-        this.webSocketSession = command.getSession();
+        this.xaRealResponseEvent = command.getXaRealResponseEvent();
         this.eBestConfig = command.getEBestConfig();
         this.request = command.getRequest();
         this.objectMapper = new ObjectMapper();
@@ -86,12 +86,7 @@ public class XARealSubscribe extends Thread {
                 if(response == null) continue;
 
                 setResponseData(ixaReal, resFileData.getResponseColumnMap(), response);
-
-                String responseStr = objectMapper.writeValueAsString(response);
-                if(logger.isDebugEnabled())
-                    logger.debug(" <= response message \n---\n{}\n---", responseStr);
-
-                webSocketSession.sendMessage(new TextMessage(responseStr));
+                this.xaRealResponseEvent.responseEvent(response);
             }
 
             logger.info("XARealSubscribeHelper process end.");

@@ -2,12 +2,12 @@ package name.buycycle.control;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import name.buycycle.configuration.ebest.vo.EBestConfig;
+import name.buycycle.vendor.ebest.event.XARealResponseEvent;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
+import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -24,9 +24,6 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
     private XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
 
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private EBestConfig eBestConfig;
 
     {
         objectMapper = new ObjectMapper();
@@ -59,6 +56,12 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
             logger.debug(" => request message \n---\n{}\n---", requestJsonMessage);
 
         Request request = objectMapper.readValue(requestJsonMessage, Request.class);
-        xaRealSubscribeManager.realTrRequest(session, eBestConfig, request);
+        xaRealSubscribeManager.realTrRequest(response -> {
+            String responseStr = objectMapper.writeValueAsString(response);
+            if(logger.isDebugEnabled())
+                logger.debug(" <= response message \n---\n{}\n---", responseStr);
+
+            session.sendMessage(new TextMessage(responseStr));
+        }, request);
     }
 }
