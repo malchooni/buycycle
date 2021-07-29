@@ -18,8 +18,9 @@ management:
     shutdown:
       enabled: true
 
-#eureka:
-#  client:
+eureka:
+  client:
+    enabled: false
 #    serviceUrl:
 #      defaultZone:
 
