@@ -20,7 +20,7 @@ import javax.annotation.PreDestroy;
 @Component
 public class EBestInitialization {
 
-    private Logger logger = LoggerFactory.getLogger(EBestInitialization.class);
+    private final Logger logger = LoggerFactory.getLogger(EBestInitialization.class);
 
     @Autowired
     private EBestConfig eBestConfig;

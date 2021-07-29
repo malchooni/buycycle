@@ -27,17 +27,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/ebest")
 public class EBestController {
 
-    private final static String REAL_TR_LIST = "real_tr_list"; // real tr 목록
-    private final static String REAL_TR_DESC = "real_tr_desc"; // real tr 상세
-    private final static String QUERY_TR_LIST = "query_tr_list"; // query tr 목록
-    private final static String QUERY_TR_DESC = "query_tr_desc"; // query tr 상세
-    private final static String REQUEST_MESSAGE = "request_message";  // 요청메시지
-    private final static String REQUEST = "request"; // 요청
+    private static final String REAL_TR_LIST = "real_tr_list"; // real tr 목록
+    private static final String REAL_TR_DESC = "real_tr_desc"; // real tr 상세
+    private static final String QUERY_TR_LIST = "query_tr_list"; // query tr 목록
+    private static final String QUERY_TR_DESC = "query_tr_desc"; // query tr 상세
+    private static final String REQUEST_MESSAGE = "request_message";  // 요청메시지
+    private static final String REQUEST = "request"; // 요청
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
-    private XAQueryManager xaQueryManager = XAQueryManager.getInstance();
+    private final XAQueryManager xaQueryManager = XAQueryManager.getInstance();
 
     @Autowired
     private EBestDescription eBestDescription;
@@ -50,7 +50,7 @@ public class EBestController {
      * @throws Exception exception
      */
     @PostMapping(value = "/queries", produces = "application/json;charset=utf-8")
-    ResponseEntity<EntityModel<Response>> queryRequest(@RequestBody Request request) throws Exception {
+    public ResponseEntity<EntityModel<Response>> queryRequest(@RequestBody Request request) throws Exception {
 
         if(logger.isDebugEnabled())
             logger.debug(" => request message \n---\n{}\n---", objectMapper.writeValueAsString(request));
@@ -72,7 +72,7 @@ public class EBestController {
      * @return XAReal 요청 목록
      */
     @GetMapping("/description/realtime")
-    ResponseEntity<EntityModel<ResTable>> listReal() throws Exception {
+    public ResponseEntity<EntityModel<ResTable>> listReal() throws Exception {
         if(logger.isInfoEnabled())
             logger.info("Real 목록 요청");
 
@@ -91,7 +91,7 @@ public class EBestController {
      * @return XAQuery 요청 목록
      */
     @GetMapping("/description/queries")
-    ResponseEntity<EntityModel<ResTable>> listQuery() throws Exception {
+    public ResponseEntity<EntityModel<ResTable>> listQuery() throws Exception {
         if(logger.isInfoEnabled())
             logger.info("Query 목록 요청");
 
@@ -112,7 +112,7 @@ public class EBestController {
      * @return 대상 TR 명세서
      */
     @GetMapping("/description/realtime/{trName}")
-    ResponseEntity<EntityModel<ResDesc>> listReal(@PathVariable String trName) throws Exception {
+    public ResponseEntity<EntityModel<ResDesc>> listReal(@PathVariable String trName) throws Exception {
         if(logger.isInfoEnabled())
             logger.info("[{}] Real 명세 요청", trName);
 
@@ -133,7 +133,7 @@ public class EBestController {
      * @return 대상 TR 명세서
      */
     @GetMapping("/description/queries/{trName}")
-    ResponseEntity<EntityModel<ResDesc>> listQuery(@PathVariable String trName) throws Exception {
+    public ResponseEntity<EntityModel<ResDesc>> listQuery(@PathVariable String trName) throws Exception {
         if(logger.isInfoEnabled())
             logger.info("[{}] Query 명세 요청", trName);
         ResDesc result =  eBestDescription.resDesc(trName);
@@ -153,7 +153,7 @@ public class EBestController {
      * @return 대상 TR 요청 메시지
      */
     @GetMapping(value = "/request-messages/{trName}")
-    ResponseEntity<EntityModel<Request>> requestMessage(@PathVariable String trName) throws Exception {
+    public ResponseEntity<EntityModel<Request>> requestMessage(@PathVariable String trName) throws Exception {
         if(logger.isInfoEnabled())
             logger.info("[{}] 요청 메시지 샘플", trName);
         Request result = eBestDescription.requestMessage(trName);
