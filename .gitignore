@@ -37,3 +37,4 @@ logs/*.log
 **/buycycle.pid
 **/static/**
 **/resources/application.yaml
+**/resources/bootstrap.yaml
