@@ -59,7 +59,13 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
             if(logger.isDebugEnabled())
                 logger.debug(" <= response message \n---\n{}\n---", responseStr);
 
-            session.sendMessage(new TextMessage(responseStr));
+            if(session.isOpen()){
+                session.sendMessage(new TextMessage(responseStr));
+            }else{
+                session.close();
+            }
+
+
         }, request);
     }
 }
