@@ -3,7 +3,7 @@ server:
   port: 7771
 
 logging:
-  config: ./buycycle/config/logback.xml
+  config: ./config/logback.xml
 
 ebest:
   resRootPath: 'C:\\eBEST\\xingAPI\\Res'
