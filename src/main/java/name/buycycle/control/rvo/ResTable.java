@@ -1,4 +1,4 @@
-package name.buycycle.controller.vo;
+package name.buycycle.control.rvo;
 
 import name.buycycle.service.ebest.vo.TableHeaderItem;
 

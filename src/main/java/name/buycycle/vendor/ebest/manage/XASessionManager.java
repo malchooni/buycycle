@@ -1,6 +1,5 @@
 package name.buycycle.vendor.ebest.manage;
 
-import name.buycycle.config.ebest.EBestConfig;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.exception.ConnectFailException;
 import name.buycycle.vendor.ebest.exception.RequestTimeOutException;
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * xa session 연결 관리자
  */
-public class XASessionManager extends AbstractManager<String>{
+public class XASessionManager extends AbstractManager<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(XASessionManager.class);
     private static final XASessionManager instance = new XASessionManager();
@@ -25,7 +24,6 @@ public class XASessionManager extends AbstractManager<String>{
     public static final String TOUCH = "TOUCH";
     public static final String CHECK = "CHECK";
 
-    private EBestConfig eBestConfig;
     private boolean succeedLogin = false;
     private long touchTime;
     private XASession xaSession;
@@ -33,14 +31,6 @@ public class XASessionManager extends AbstractManager<String>{
     private XASessionManager() {
         super("XASessionManager", logger);
         this.setRequestTimeOut(10000).setRequestTimeOutCommand(CHECK);
-    }
-
-    /**
-     * 설정 주입
-     * @param eBestConfig EBest 환경 설정
-     */
-    public void setEBestConfig(EBestConfig eBestConfig) {
-        this.eBestConfig = eBestConfig;
     }
 
     /**
@@ -86,14 +76,18 @@ public class XASessionManager extends AbstractManager<String>{
         requestCommand(TOUCH);
     }
 
+    /**
+     * 스레드 초기화
+     */
     @Override
-    void init() {
+    public void initialize() {
+        if(eBestConfig == null) throw new NullPointerException("EBestConfig is null.");
         this.xaSession = new XASession(this.eBestConfig);
         this.touchRequest();
     }
 
     @Override
-    void request(String command) throws Exception{
+    void request(String command){
         switch (command){
             case LOGIN:
                 this.loginRequest(this.xaSession);

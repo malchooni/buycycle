@@ -1,4 +1,4 @@
-package name.buycycle.config.ebest;
+package name.buycycle.configuration.ebest.vo;
 
 import name.buycycle.vendor.ebest.config.vo.Connect;
 import name.buycycle.vendor.ebest.config.vo.User;

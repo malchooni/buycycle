@@ -1,7 +1,7 @@
-package name.buycycle.config.ebest;
+package name.buycycle.configuration.ebest;
 
-import name.buycycle.service.ebest.handler.XARealWebSocketHandler;
-import name.buycycle.service.ebest.handler.XASessionChecker;
+import name.buycycle.control.XARealWebSocketHandler;
+import name.buycycle.control.XASessionChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

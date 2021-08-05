@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: buycycle
+  profiles:
+    active: dev
+  cloud:
+    config:
+      enabled: false
+      uri:
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    shutdown:
+      enabled: true

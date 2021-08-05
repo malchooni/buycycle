@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 /**
  * welcome to buycycle
@@ -13,6 +14,7 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
  * @author : ijyoon
  * @date : 2021/03/24
  */
+@EnableEurekaClient
 @SpringBootApplication
 public class BuyCycleApplication {
 

@@ -3,7 +3,7 @@ package name.buycycle.vendor.ebest.session;
 import com4j.COM4J;
 import com4j.EventCookie;
 import name.buycycle.vendor.ebest.config.vo.Connect;
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
 import name.buycycle.vendor.ebest.config.vo.User;
 import name.buycycle.vendor.ebest.event.handler.XASessionEventHandler;
 import name.buycycle.vendor.ebest.event.vo.res.Response;

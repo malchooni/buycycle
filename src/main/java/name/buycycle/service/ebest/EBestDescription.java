@@ -1,7 +1,7 @@
 package name.buycycle.service.ebest;
 
-import name.buycycle.controller.vo.TableHeader;
-import name.buycycle.controller.vo.ResTable;
+import name.buycycle.control.rvo.TableHeader;
+import name.buycycle.control.rvo.ResTable;
 import name.buycycle.service.ebest.vo.ResDesc;
 import name.buycycle.service.ebest.vo.TableHeaderItem;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
@@ -20,7 +20,7 @@ import java.util.Set;
  * res 파일에 대한 정보
  */
 @Component
-public class EBestDescriptionHelper {
+public class EBestDescription {
 
     private ResDataRepository resDataRepository = MessageHelper.getInstance().getResDataRepository();
 
@@ -63,7 +63,7 @@ public class EBestDescriptionHelper {
     }
 
     /**
-     *  테스트용 메시지 생성
+     * 메시지 생성
      * @param trName
      * @return
      */
