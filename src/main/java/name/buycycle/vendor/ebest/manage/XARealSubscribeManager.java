@@ -1,17 +1,16 @@
 package name.buycycle.vendor.ebest.manage;
 
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.vendor.ebest.event.XARealResponseEvent;
+import name.buycycle.vendor.ebest.event.XARealSubscribe;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
-import name.buycycle.vendor.ebest.invoke.XARealSubscribeHelper;
 import name.buycycle.vendor.ebest.manage.command.XARealSubscribeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class XARealSubscribeManager extends AbstractManager<XARealSubscribeCommand>{
+public class XARealSubscribeManager extends AbstractManager<XARealSubscribeCommand> {
 
     private static final Logger logger = LoggerFactory.getLogger(XARealSubscribeManager.class);
     private static final XARealSubscribeManager instance = new XARealSubscribeManager();
@@ -22,24 +21,20 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     public static final String REQUEST = "REQUEST";
     public static final String SHUTDOWN = "SHUTDOWN";
 
-    private List<XARealSubscribeHelper> threadList;
+    private List<XARealSubscribe> threadList;
 
     private XARealSubscribeManager() {
         super("XARealSubscribeManager", logger);
         this.threadList = new ArrayList<>();
     }
 
-    @Override
-    void init() {}
-
     /**
      * 실시간 tr 요청
      * @param request
      */
-    public void realTrRequest(WebSocketSession session, EBestConfig eBestConfig, Request request){
+    public void realTrRequest(XARealResponseEvent event, Request request){
         requestCommand(new XARealSubscribeCommand(REQUEST)
-                        .setSession(session)
-                        .setEBestConfig(eBestConfig)
+                        .setXaRealResponseEvent(event)
                         .setRequest(request)
         );
     }
@@ -48,8 +43,14 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
         requestCommand(new XARealSubscribeCommand(SHUTDOWN));
     }
 
+    /**
+     * 스레드 초기화
+     */
     @Override
-    void request(XARealSubscribeCommand command) throws Exception{
+    public void initialize() {}
+
+    @Override
+    void request(XARealSubscribeCommand command){
         switch (command.toString()){
             case REQUEST:
                 this.realTrRequestProcess(command);
@@ -64,7 +65,8 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     }
 
     public void realTrRequestProcess(XARealSubscribeCommand command){
-        XARealSubscribeHelper helper = new XARealSubscribeHelper(command);
+        command.setEBestConfig(this.eBestConfig);
+        XARealSubscribe helper = new XARealSubscribe(command);
         helper.start();
         threadList.add(helper);
     }

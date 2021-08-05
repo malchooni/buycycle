@@ -1,15 +1,18 @@
 package name.buycycle.vendor.ebest.manage;
 
-import name.buycycle.process.command.BlockingCommand;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
+import name.buycycle.vendor.ebest.manage.command.BlockingCommand;
 import org.slf4j.Logger;
 
-abstract class AbstractManager<T> extends Thread{
+abstract class AbstractManager<T> extends Thread implements Manager<T> {
 
     private Logger logger;
     private boolean running = true;
 
     private final BlockingCommand request;
     private final BlockingCommand response;
+
+    protected EBestConfig eBestConfig;
 
     protected AbstractManager(String threadName, Logger logger){
         super(threadName);
@@ -54,12 +57,20 @@ abstract class AbstractManager<T> extends Thread{
         this.running = running;
     }
 
+    /**
+     * 설정 주입
+     * @param eBestConfig EBest 환경 설정
+     */
+    public void setEBestConfig(EBestConfig eBestConfig) {
+        this.eBestConfig = eBestConfig;
+    }
+
     @Override
     public void run() {
         if(logger.isInfoEnabled())
             logger.info("{} started..", this.getName());
 
-        init();
+        initialize();
         while(running){
             try{
                 T command = this.request.take();
@@ -74,6 +85,5 @@ abstract class AbstractManager<T> extends Thread{
             logger.info("{} shutdown done..", this.getName());
     }
 
-    abstract void init();
-    abstract void request(T command) throws Exception;
+    abstract void request(T command);
 }

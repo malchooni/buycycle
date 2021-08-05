@@ -1,6 +1,7 @@
-package name.buycycle.service.ebest;
+package name.buycycle.configuration.ebest;
 
-import name.buycycle.config.ebest.EBestConfig;
+import name.buycycle.configuration.ebest.vo.EBestConfig;
+import name.buycycle.vendor.ebest.manage.XAQueryManager;
 import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
 import name.buycycle.vendor.ebest.message.MessageHelper;
 import name.buycycle.vendor.ebest.manage.XASessionManager;
@@ -19,7 +20,7 @@ import javax.annotation.PreDestroy;
 @Component
 public class EBestInitialization {
 
-    private Logger logger = LoggerFactory.getLogger(EBestInitialization.class);
+    private final Logger logger = LoggerFactory.getLogger(EBestInitialization.class);
 
     @Autowired
     private EBestConfig eBestConfig;
@@ -48,7 +49,15 @@ public class EBestInitialization {
     @PostConstruct
     public void xaRealSubscribeManager(){
         XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
+        xaRealSubscribeManager.setEBestConfig(eBestConfig);
         xaRealSubscribeManager.start();
+    }
+
+    @PostConstruct
+    public void xaQueryManager(){
+        XAQueryManager xaQueryManager = XAQueryManager.getInstance();
+        xaQueryManager.setEBestConfig(eBestConfig);
+        xaQueryManager.initialize();
     }
 
     /**

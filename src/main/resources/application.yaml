@@ -1,18 +1,9 @@
 server:
-  address: 127.0.0.1
+  address: localhost
   port: 7771
 
 logging:
   config: ./buycycle/config/logback.xml
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    shutdown:
-      enabled: true
 
 ebest:
   resRootPath: 'C:\\eBEST\\xingAPI\\Res'
@@ -25,3 +16,11 @@ ebest:
     id: ''
     pw: ''
     cpwd: ''
+
+eureka:
+  client:
+    enabled: false
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone:
