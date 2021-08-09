@@ -68,6 +68,7 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
                 break;
             case STOP:
                 this.realTrStopProcess(command);
+                break;
             case SHUTDOWN:
                 this.shutdownProcess();
                 break;

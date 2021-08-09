@@ -62,32 +62,28 @@ public class XARealSubscribe extends Thread {
         IXAReal ixaReal = null;
         Response response;
 
-        try{
+        try {
             ResFileData resFileData = messageHelper.getResFileData(ResFileData.REAL, requestBody.getTrName());
             xaRealEventHandler = new XARealEventHandler(request.getHeader().getUuid());
-            xaObject  = XAObjectHelper.createXAObject(eBestConfig.getResRootPath(), resFileData, _IXARealEvents.class, xaRealEventHandler);
+            xaObject = XAObjectHelper.createXAObject(eBestConfig.getResRootPath(), resFileData, _IXARealEvents.class, xaRealEventHandler);
             ixaReal = xaObject.getIxaType();
 
             XAObjectHelper.readyForRequest(ixaReal, resFileData, requestBody.getQuery());
             ixaReal.adviseRealData();
 
-            while(isRunning()){
-                synchronized (xaRealEventHandler){
-                    try{
-                        xaRealEventHandler.wait(eBestConfig.getConnect().getRequestReadTimeOut());
-                    }catch (InterruptedException ie){
-                        continue;
-                    }
+            while (isRunning()) {
+                synchronized (xaRealEventHandler) {
+                    xaRealEventHandler.wait();
+
+                    response = xaRealEventHandler.getResponse();
+                    if (response == null) continue;
+
+                    setResponseData(ixaReal, resFileData.getResponseColumnMap(), response);
+                    this.xaRealResponseEvent.responseEvent(request, response);
                 }
-
-                response = xaRealEventHandler.getResponse();
-                if(response == null) continue;
-
-                setResponseData(ixaReal, resFileData.getResponseColumnMap(), response);
-                this.xaRealResponseEvent.responseEvent(request, response);
             }
-
-            logger.info("XARealSubscribeHelper process end.");
+        }catch (InterruptedException ie){
+            logger.info("XARealSubscribe shutdown event received.");
         }catch (Exception e){
             if(logger.isErrorEnabled())
                 logger.error(e.getMessage(), e);
@@ -102,6 +98,7 @@ public class XARealSubscribe extends Thread {
 
                 COM4J.cleanUp();
             }
+            logger.info("XARealSubscribe process end.");
         }
     }
 
@@ -111,9 +108,10 @@ public class XARealSubscribe extends Thread {
 
     public void shutdown(){
         this.running = false;
-        synchronized (xaRealEventHandler){
-            this.xaRealEventHandler.notify();
-        }
+//        synchronized (xaRealEventHandler){
+//            this.xaRealEventHandler.notify();
+//        }
+        this.interrupt();
     }
 
     public Request getRequest() {

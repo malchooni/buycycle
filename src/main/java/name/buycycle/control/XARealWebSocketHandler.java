@@ -91,7 +91,7 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
                         "already requested : [{}] [{}] [{}]",
                         session.getId(),
                         request.getBody().getTrName(),
-                        request.getBody().getQuery().get(0)
+                        request.getFirstValue()
                 );
             return;
         } else {
@@ -129,6 +129,9 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
     private boolean checkAlreadyRequest(WebSocketSession searchSession, Request request){
         String searchSessionId = searchSession.getId();
         List<WebSocketSession> sessionIdList = requestSessionMap.get(request);
+
+        if(sessionIdList == null) return false;
+
         for(WebSocketSession session : sessionIdList){
             if(searchSessionId.equals(session.getId()))
                 return true;
