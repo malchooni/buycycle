@@ -24,4 +24,16 @@ public class Request {
     public void setBody(RequestBody body) {
         this.body = body;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Request target = (Request) obj;
+        String targetTrName = target.getBody().getTrName();
+        String targetQuery = target.getBody().getQuery().get(0);
+
+        if(this.body.getTrName().equals(targetTrName) && this.body.getQuery().get(0).equals(targetQuery))
+            return true;
+        else
+            return false;
+    }
 }

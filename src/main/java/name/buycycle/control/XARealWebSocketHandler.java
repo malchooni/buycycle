@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import name.buycycle.vendor.ebest.event.vo.req.Request;
 import name.buycycle.vendor.ebest.manage.XARealSubscribeManager;
-import org.bouncycastle.cert.ocsp.Req;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,14 +27,14 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
     private Logger logger = LoggerFactory.getLogger(XARealWebSocketHandler.class);
     private XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
 
-    private Map<String, List<Request>> sessionRequestMap;
+    private Map<Request, List<WebSocketSession>> requestSessionMap;
 
     private ObjectMapper objectMapper;
 
     {
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        sessionRequestMap = new ConcurrentHashMap<>();
+        requestSessionMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -45,6 +45,27 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+
+        String targetSessionId = session.getId();
+        Iterator<Request> requestIterator = requestSessionMap.keySet().iterator();
+        while(requestIterator.hasNext()){
+            Request key = requestIterator.next();
+
+            List<WebSocketSession> sessionList = requestSessionMap.get(key);
+            for(int i = 0; i < sessionList.size(); i++){
+                WebSocketSession getSession = sessionList.get(i);
+                if(targetSessionId.equals(getSession.getId())){
+                    sessionList.remove(i);
+                    break;
+                }
+            }
+
+            if(sessionList.size() == 0){
+                xaRealSubscribeManager.realTrStop(key);
+                requestIterator.remove();
+            }
+        }
+
         if(logger.isInfoEnabled())
             logger.info("ConnectionClosed : {}", session.getId());
     }
@@ -63,10 +84,8 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
             logger.debug(" => request message \n---\n{}\n---", requestJsonMessage);
 
         Request request = objectMapper.readValue(requestJsonMessage, Request.class);
-        String requestTrName = request.getBody().getTrName();
-        String requestQuery = request.getBody().getQuery().get(0);
 
-        if (this.checkAlreadyRequest(session, requestTrName, requestQuery)){
+        if (this.checkAlreadyRequest(session, request)){
             if(logger.isInfoEnabled())
                 logger.info(
                         "already requested : [{}] [{}] [{}]",
@@ -76,39 +95,43 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
                 );
             return;
         } else {
-            List<Request> requestList = sessionRequestMap.get(session.getId());
-            if( requestList == null ){
-                requestList = new ArrayList<>();
-                sessionRequestMap.put(session.getId(), requestList);
+            List<WebSocketSession> sessionList = requestSessionMap.get(request);
+            if( sessionList == null ){
+                sessionList = new ArrayList<>();
+                requestSessionMap.put(request, sessionList);
             }
-            requestList.add(request);
+            sessionList.add(session);
         }
 
-        xaRealSubscribeManager.realTrRequest(response -> {
-            String responseStr = objectMapper.writeValueAsString(response);
-            if(logger.isDebugEnabled())
-                logger.debug(" <= response message \n---\n{}\n---", responseStr);
+        xaRealSubscribeManager.realTrRequest((receiveRequest, response) -> {
+            List<WebSocketSession> sessionList = requestSessionMap.get(receiveRequest);
+            if(sessionList != null && sessionList.size() > 0 ){
+                String responseStr = objectMapper.writeValueAsString(response);
+                for(WebSocketSession responseSession : sessionList){
+                    if(logger.isDebugEnabled())
+                        logger.debug(" <= response message \n---\n{}\n---", responseStr);
 
-            if(session.isOpen()){
-                session.sendMessage(new TextMessage(responseStr));
-            }else{
-                session.close();
+                    if(responseSession.isOpen())
+                        responseSession.sendMessage(new TextMessage(responseStr));
+                    else
+                        responseSession.close();
+                }
             }
-
-
         }, request);
     }
 
-    private boolean checkAlreadyRequest(WebSocketSession session, String requestTrName, String requestQuery){
-        List<Request> requestList = sessionRequestMap.get(session.getId());
-        if(requestList == null || requestList.size() < 1){
-            return false;
-        }
-
-        for(Request requestItem : requestList){
-            if(requestTrName.equals(requestItem.getBody().getTrName()) && requestItem.getBody().getQuery().containsValue(requestQuery)){
+    /**
+     * 이미 요청된 tr 인지 확인
+     * @param searchSession
+     * @param request
+     * @return
+     */
+    private boolean checkAlreadyRequest(WebSocketSession searchSession, Request request){
+        String searchSessionId = searchSession.getId();
+        List<WebSocketSession> sessionIdList = requestSessionMap.get(request);
+        for(WebSocketSession session : sessionIdList){
+            if(searchSessionId.equals(session.getId()))
                 return true;
-            }
         }
         return false;
     }

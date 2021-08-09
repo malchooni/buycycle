@@ -84,7 +84,7 @@ public class XARealSubscribe extends Thread {
                 if(response == null) continue;
 
                 setResponseData(ixaReal, resFileData.getResponseColumnMap(), response);
-                this.xaRealResponseEvent.responseEvent(response);
+                this.xaRealResponseEvent.responseEvent(request, response);
             }
 
             logger.info("XARealSubscribeHelper process end.");
@@ -114,6 +114,10 @@ public class XARealSubscribe extends Thread {
         synchronized (xaRealEventHandler){
             this.xaRealEventHandler.notify();
         }
+    }
+
+    public Request getRequest() {
+        return request;
     }
 
     /**
