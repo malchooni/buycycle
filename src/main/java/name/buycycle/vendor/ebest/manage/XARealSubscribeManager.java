@@ -7,8 +7,8 @@ import name.buycycle.vendor.ebest.manage.command.XARealSubscribeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class XARealSubscribeManager extends AbstractManager<XARealSubscribeCommand> {
 
@@ -22,11 +22,11 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     public static final String STOP = "STOP";
     public static final String SHUTDOWN = "SHUTDOWN";
 
-    private List<XARealSubscribe> threadList;
+    private Map<Request, XARealSubscribe> threadMap;
 
     private XARealSubscribeManager() {
         super("XARealSubscribeManager", logger);
-        this.threadList = new ArrayList<>();
+        this.threadMap = new HashMap<>();
     }
 
     /**
@@ -79,28 +79,32 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     }
 
     public void realTrRequestProcess(XARealSubscribeCommand command){
+
+        if(this.threadMap.containsKey(command.getRequest())){
+            return;
+        }
+
         command.setEBestConfig(this.eBestConfig);
-        XARealSubscribe helper = new XARealSubscribe(command);
-        helper.start();
-        threadList.add(helper);
+        XARealSubscribe xaRealSubscribe = new XARealSubscribe(command);
+        xaRealSubscribe.start();
+        this.threadMap.put(command.getRequest(), xaRealSubscribe);
     }
 
     public void realTrStopProcess(XARealSubscribeCommand command){
-        for (XARealSubscribe xaRealSubscribe : threadList){
-            Request request = xaRealSubscribe.getRequest();
-            if(request.equals(command.getRequest())){
-                xaRealSubscribe.shutdown();
-                try { xaRealSubscribe.join(); } catch (InterruptedException e) {}
-            }
-            threadList.remove(xaRealSubscribe);
-            break;
-        }
+
+        XARealSubscribe xaRealSubscribe = this.threadMap.remove(command.getRequest());
+
+        if(xaRealSubscribe == null) return;
+
+        xaRealSubscribe.shutdown();
+        try { xaRealSubscribe.join(); } catch (InterruptedException e) {}
     }
 
     public void shutdownProcess(){
-        threadList.forEach(thread -> {
-            thread.shutdown();
-            try { thread.join(); } catch (InterruptedException e) {}
+
+        threadMap.forEach((request, xaRealSubscribe) -> {
+            xaRealSubscribe.shutdown();
+            try { xaRealSubscribe.join(); } catch (InterruptedException e) {}
         });
         setRunning(false);
     }

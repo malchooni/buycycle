@@ -1,5 +1,6 @@
 package name.buycycle.vendor.ebest.event.handler;
 
+import name.buycycle.vendor.ebest.event.XARealSubscribe;
 import name.buycycle.vendor.ebest.event.com4j._IXARealEvents;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.manage.XASessionManager;
@@ -16,9 +17,13 @@ public class XARealEventHandler extends _IXARealEvents {
     private Logger logger = LoggerFactory.getLogger(XARealEventHandler.class);
     private Response response;
 
+    private Object monitor;
+
+    private XARealSubscribe xaRealSubscribe;
     private String requestUUID;
 
-    public XARealEventHandler(String uuid) {
+    public XARealEventHandler(Object monitor, String uuid) {
+        this.monitor = monitor;
         this.requestUUID = uuid;
     }
 
@@ -28,6 +33,7 @@ public class XARealEventHandler extends _IXARealEvents {
 
     @Override
     public void receiveRealData(String szTrCode) {
+
         if(logger.isDebugEnabled())
             logger.debug("RequestUUID : {}, szTrCode : {}", this.requestUUID, szTrCode);
 
@@ -36,13 +42,14 @@ public class XARealEventHandler extends _IXARealEvents {
 
         XASessionManager.getInstance().touch();
 
-        synchronized (this){
-            this.notify();
+        synchronized (this.monitor){
+            this.monitor.notify();
         }
     }
 
     @Override
     public void recieveLinkData(String szLinkName, String szData, String szFiller) {
+
         if(logger.isDebugEnabled())
             logger.debug("RequestUUID : {}, szLinkName : {}, szData : {}, szFiller : {}", this.requestUUID, szLinkName, szData, szFiller);
 
@@ -50,8 +57,8 @@ public class XARealEventHandler extends _IXARealEvents {
         this.response.putHeader("szLinkName", szLinkName);
         this.response.putHeader("szData", szData);
         this.response.putHeader("szFiller", szFiller);
-        synchronized (this){
-            this.notify();
+        synchronized (this.monitor){
+            this.monitor.notify();
         }
     }
 }

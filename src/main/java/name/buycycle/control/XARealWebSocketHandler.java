@@ -112,7 +112,9 @@ public class XARealWebSocketHandler extends TextWebSocketHandler {
                         logger.debug(" <= response message \n---\n{}\n---", responseStr);
 
                     if(responseSession.isOpen())
-                        responseSession.sendMessage(new TextMessage(responseStr));
+                        synchronized (responseSession){
+                            responseSession.sendMessage(new TextMessage(responseStr));
+                        }
                     else
                         responseSession.close();
                 }
