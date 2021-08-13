@@ -7,8 +7,8 @@ import name.buycycle.vendor.ebest.manage.command.XARealSubscribeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class XARealSubscribeManager extends AbstractManager<XARealSubscribeCommand> {
 
@@ -19,13 +19,14 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     }
 
     public static final String REQUEST = "REQUEST";
+    public static final String STOP = "STOP";
     public static final String SHUTDOWN = "SHUTDOWN";
 
-    private List<XARealSubscribe> threadList;
+    private Map<Request, XARealSubscribe> threadMap;
 
     private XARealSubscribeManager() {
         super("XARealSubscribeManager", logger);
-        this.threadList = new ArrayList<>();
+        this.threadMap = new HashMap<>();
     }
 
     /**
@@ -36,6 +37,16 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
         requestCommand(new XARealSubscribeCommand(REQUEST)
                         .setXaRealResponseEvent(event)
                         .setRequest(request)
+        );
+    }
+
+    /**
+     * 특정 스레드 중지 요청
+     * @param request
+     */
+    public void realTrStop(Request request){
+        requestCommand(new XARealSubscribeCommand(STOP)
+                .setRequest(request)
         );
     }
 
@@ -55,6 +66,9 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
             case REQUEST:
                 this.realTrRequestProcess(command);
                 break;
+            case STOP:
+                this.realTrStopProcess(command);
+                break;
             case SHUTDOWN:
                 this.shutdownProcess();
                 break;
@@ -65,16 +79,32 @@ public class XARealSubscribeManager extends AbstractManager<XARealSubscribeComma
     }
 
     public void realTrRequestProcess(XARealSubscribeCommand command){
+
+        if(this.threadMap.containsKey(command.getRequest())){
+            return;
+        }
+
         command.setEBestConfig(this.eBestConfig);
-        XARealSubscribe helper = new XARealSubscribe(command);
-        helper.start();
-        threadList.add(helper);
+        XARealSubscribe xaRealSubscribe = new XARealSubscribe(command);
+        xaRealSubscribe.start();
+        this.threadMap.put(command.getRequest(), xaRealSubscribe);
+    }
+
+    public void realTrStopProcess(XARealSubscribeCommand command){
+
+        XARealSubscribe xaRealSubscribe = this.threadMap.remove(command.getRequest());
+
+        if(xaRealSubscribe == null) return;
+
+        xaRealSubscribe.shutdown();
+        try { xaRealSubscribe.join(); } catch (InterruptedException e) {}
     }
 
     public void shutdownProcess(){
-        threadList.forEach(thread -> {
-            thread.shutdown();
-            try { thread.join(); } catch (InterruptedException e) {}
+
+        threadMap.forEach((request, xaRealSubscribe) -> {
+            xaRealSubscribe.shutdown();
+            try { xaRealSubscribe.join(); } catch (InterruptedException e) {}
         });
         setRunning(false);
     }
