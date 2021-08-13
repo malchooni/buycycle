@@ -89,11 +89,15 @@ public class XASession extends Thread{
      * session close
      */
     public synchronized void close() {
-        if (this.ixaSession.isConnected())
-            this.ixaSession.disconnectServer();
+        try{
+            if (this.ixaSession != null)
+                this.ixaSession.disconnectServer();
+        }catch (Exception e){}
 
-        if (this.eventCookie != null)
-            this.eventCookie.close();
+        try{
+            if (this.eventCookie != null)
+                this.eventCookie.close();
+        }catch (Exception e){}
 
         COM4J.cleanUp();
     }

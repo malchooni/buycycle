@@ -1,6 +1,5 @@
 package name.buycycle.vendor.ebest.event;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com4j.COM4J;
 import com4j.EventCookie;
 import name.buycycle.configuration.ebest.vo.EBestConfig;
@@ -35,22 +34,21 @@ public class XARealSubscribe extends Thread {
     private MessageHelper messageHelper = MessageHelper.getInstance();
 
     private boolean running = true;
+    private Object monitor;
 
     private EBestConfig eBestConfig;
     private Request request;
     private XARealResponseEvent xaRealResponseEvent;
-
-    private ObjectMapper objectMapper;
     private XARealEventHandler xaRealEventHandler;
 
     private static final AtomicInteger atomicInteger = new AtomicInteger();
 
     public XARealSubscribe(XARealSubscribeCommand command) {
-        super("XARealSubscribeHelper-" + atomicInteger.incrementAndGet());
+        super("XARealSubscribe-" + atomicInteger.incrementAndGet());
         this.xaRealResponseEvent = command.getXaRealResponseEvent();
         this.eBestConfig = command.getEBestConfig();
         this.request = command.getRequest();
-        this.objectMapper = new ObjectMapper();
+        this.monitor = new Object();
         this.setDaemon(true);
     }
 
@@ -62,32 +60,27 @@ public class XARealSubscribe extends Thread {
         IXAReal ixaReal = null;
         Response response;
 
-        try{
+        try {
             ResFileData resFileData = messageHelper.getResFileData(ResFileData.REAL, requestBody.getTrName());
-            xaRealEventHandler = new XARealEventHandler(request.getHeader().getUuid());
-            xaObject  = XAObjectHelper.createXAObject(eBestConfig.getResRootPath(), resFileData, _IXARealEvents.class, xaRealEventHandler);
+            xaRealEventHandler = new XARealEventHandler(this.monitor, request.getHeader().getUuid());
+            xaObject = XAObjectHelper.createXAObject(eBestConfig.getResRootPath(), resFileData, _IXARealEvents.class, xaRealEventHandler);
             ixaReal = xaObject.getIxaType();
 
             XAObjectHelper.readyForRequest(ixaReal, resFileData, requestBody.getQuery());
             ixaReal.adviseRealData();
 
-            while(isRunning()){
-                synchronized (xaRealEventHandler){
-                    try{
-                        xaRealEventHandler.wait(eBestConfig.getConnect().getRequestReadTimeOut());
-                    }catch (InterruptedException ie){
-                        continue;
-                    }
+            while (isRunning()) {
+                synchronized (this.monitor) {
+                    this.monitor.wait();
                 }
+                if (!isRunning()) break;
 
                 response = xaRealEventHandler.getResponse();
-                if(response == null) continue;
-
                 setResponseData(ixaReal, resFileData.getResponseColumnMap(), response);
-                this.xaRealResponseEvent.responseEvent(response);
+                this.xaRealResponseEvent.responseEvent(request, response);
             }
-
-            logger.info("XARealSubscribeHelper process end.");
+        }catch (InterruptedException ie){
+            logger.info("XARealSubscribe shutdown event received.");
         }catch (Exception e){
             if(logger.isErrorEnabled())
                 logger.error(e.getMessage(), e);
@@ -102,6 +95,7 @@ public class XARealSubscribe extends Thread {
 
                 COM4J.cleanUp();
             }
+            logger.info("XARealSubscribe process end.");
         }
     }
 
@@ -111,9 +105,14 @@ public class XARealSubscribe extends Thread {
 
     public void shutdown(){
         this.running = false;
-        synchronized (xaRealEventHandler){
-            this.xaRealEventHandler.notify();
+        synchronized (this.monitor){
+            this.monitor.notify();
         }
+//        this.interrupt();
+    }
+
+    public Request getRequest() {
+        return request;
     }
 
     /**
