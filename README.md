@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://buycycle.name" target="_blank">
+<a href="https://opensource.buycycle.name" target="_blank">
 <img src="https://raw.githubusercontent.com/yalsooni/yalsooni.github.io/main/image/page/buycycle.svg" width="400px"/>
 </a>
 </p>
@@ -25,7 +25,7 @@ HTTP RESTful을 제공함으로써 사용자는 개발 언어에 국한되지 �
 구성
 -------------
 
-<p align="center"><img src="https://buycycle.name/image/page/buycycle_arch.svg"/></p>
+<p align="center"><img src="https://opensource.buycycle.name/image/page/buycycle_arch.svg"/></p>
 
 * backend : Spring Boot, Com4j  
   RESTful 방식으로 특정 증권사의 API를 연동합니다.  
@@ -41,4 +41,4 @@ HTTP RESTful을 제공함으로써 사용자는 개발 언어에 국한되지 �
 
 해당 사이트를 통해 바이사이클의 정보를 제공합니다.  
 실행 및 예제를 확인할 수 있습니다.  
-https://buycycle.name
+https://opensource.buycycle.name
