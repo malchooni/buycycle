@@ -2,44 +2,46 @@ package name.buycycle.vendor.ebest.config.vo;
 
 /**
  * ebest connet value object
+ *
  * @author : ijyoon
  * @date : 2021/03/24
  */
 public class Connect {
-    private String szServerIP;
-    private int nServerPort;
-    private int connectTimeOut;
-    private int requestReadTimeOut;
 
-    public String getSzServerIP() {
-        return szServerIP;
-    }
+  private String szServerIP;
+  private int nServerPort;
+  private int connectTimeOut;
+  private int requestReadTimeOut;
 
-    public void setSzServerIP(String szServerIP) {
-        this.szServerIP = szServerIP;
-    }
+  public String getSzServerIP() {
+    return szServerIP;
+  }
 
-    public int getnServerPort() {
-        return nServerPort;
-    }
+  public void setSzServerIP(String szServerIP) {
+    this.szServerIP = szServerIP;
+  }
 
-    public void setnServerPort(int nServerPort) {
-        this.nServerPort = nServerPort;
-    }
+  public int getnServerPort() {
+    return nServerPort;
+  }
 
-    public int getConnectTimeOut() {
-        return connectTimeOut;
-    }
+  public void setnServerPort(int nServerPort) {
+    this.nServerPort = nServerPort;
+  }
 
-    public void setConnectTimeOut(int connectTimeOut) {
-        this.connectTimeOut = connectTimeOut;
-    }
+  public int getConnectTimeOut() {
+    return connectTimeOut;
+  }
 
-    public int getRequestReadTimeOut() {
-        return requestReadTimeOut;
-    }
+  public void setConnectTimeOut(int connectTimeOut) {
+    this.connectTimeOut = connectTimeOut;
+  }
 
-    public void setRequestReadTimeOut(int requestReadTimeOut) {
-        this.requestReadTimeOut = requestReadTimeOut;
-    }
+  public int getRequestReadTimeOut() {
+    return requestReadTimeOut;
+  }
+
+  public void setRequestReadTimeOut(int requestReadTimeOut) {
+    this.requestReadTimeOut = requestReadTimeOut;
+  }
 }

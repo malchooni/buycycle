@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface XARealResponseEvent {
 
-    void responseEvent(Request receiveRequest, Response response) throws IOException;
+  void responseEvent(Request receiveRequest, Response response) throws IOException;
 }

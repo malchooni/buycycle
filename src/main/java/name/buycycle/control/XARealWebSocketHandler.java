@@ -24,120 +24,131 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class XARealWebSocketHandler extends TextWebSocketHandler {
 
-    private Logger logger = LoggerFactory.getLogger(XARealWebSocketHandler.class);
-    private XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
+  private Logger logger = LoggerFactory.getLogger(XARealWebSocketHandler.class);
+  private XARealSubscribeManager xaRealSubscribeManager = XARealSubscribeManager.getInstance();
 
-    private Map<Request, List<WebSocketSession>> requestSessionMap;
+  private Map<Request, List<WebSocketSession>> requestSessionMap;
 
-    private ObjectMapper objectMapper;
+  private ObjectMapper objectMapper;
 
-    {
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        requestSessionMap = new ConcurrentHashMap<>();
+  public XARealWebSocketHandler() {
+    objectMapper = new ObjectMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    requestSessionMap = new ConcurrentHashMap<>();
+  }
+
+  @Override
+  public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    if (logger.isInfoEnabled()) {
+      logger.info("ConnectionEstablished : {}", session.getId());
     }
+  }
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        if(logger.isInfoEnabled())
-            logger.info("ConnectionEstablished : {}", session.getId());
-    }
+  @Override
+  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    String targetSessionId = session.getId();
+    Iterator<Request> requestIterator = requestSessionMap.keySet().iterator();
+    while (requestIterator.hasNext()) {
+      Request key = requestIterator.next();
 
-        String targetSessionId = session.getId();
-        Iterator<Request> requestIterator = requestSessionMap.keySet().iterator();
-        while(requestIterator.hasNext()){
-            Request key = requestIterator.next();
-
-            List<WebSocketSession> sessionList = requestSessionMap.get(key);
-            for(int i = 0; i < sessionList.size(); i++){
-                WebSocketSession getSession = sessionList.get(i);
-                if(targetSessionId.equals(getSession.getId())){
-                    sessionList.remove(i);
-                    break;
-                }
-            }
-
-            if(sessionList.size() == 0){
-                xaRealSubscribeManager.realTrStop(key);
-                requestIterator.remove();
-            }
+      List<WebSocketSession> sessionList = requestSessionMap.get(key);
+      for (int i = 0; i < sessionList.size(); i++) {
+        WebSocketSession getSession = sessionList.get(i);
+        if (targetSessionId.equals(getSession.getId())) {
+          sessionList.remove(i);
+          break;
         }
+      }
 
-        if(logger.isInfoEnabled())
-            logger.info("ConnectionClosed : {}", session.getId());
+      if (sessionList.isEmpty()) {
+        xaRealSubscribeManager.realTrStop(key);
+        requestIterator.remove();
+      }
     }
 
-    /**
-     * 요청 받은 후 수신 이벤트 응답 스레드 생성
-     * @param session
-     * @param message
-     * @throws Exception
-     */
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String requestJsonMessage = message.getPayload();
+    if (logger.isInfoEnabled()) {
+      logger.info("ConnectionClosed : {}", session.getId());
+    }
+  }
 
-        if(logger.isDebugEnabled())
-            logger.debug(" => request message \n---\n{}\n---", requestJsonMessage);
+  /**
+   * 요청 받은 후 수신 이벤트 응답 스레드 생성
+   *
+   * @param session
+   * @param message
+   * @throws Exception
+   */
+  @Override
+  protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    String requestJsonMessage = message.getPayload();
 
-        Request request = objectMapper.readValue(requestJsonMessage, Request.class);
+    if (logger.isDebugEnabled()) {
+      logger.debug(" => request message \n---\n{}\n---", requestJsonMessage);
+    }
 
-        if (this.checkAlreadyRequest(session, request)){
-            if(logger.isInfoEnabled())
-                logger.info(
-                        "already requested : [{}] [{}] [{}]",
-                        session.getId(),
-                        request.getBody().getTrName(),
-                        request.getFirstValue()
-                );
-            return;
-        } else {
-            List<WebSocketSession> sessionList = requestSessionMap.get(request);
-            if( sessionList == null ){
-                sessionList = new ArrayList<>();
-                requestSessionMap.put(request, sessionList);
+    Request request = objectMapper.readValue(requestJsonMessage, Request.class);
+
+    if (this.checkAlreadyRequest(session, request)) {
+      if (logger.isInfoEnabled()) {
+        logger.info(
+            "already requested : [{}] [{}] [{}]",
+            session.getId(),
+            request.getBody().getTrName(),
+            request.getFirstValue()
+        );
+      }
+      return;
+    } else {
+      List<WebSocketSession> sessionList = requestSessionMap.get(request);
+      if (sessionList == null) {
+        sessionList = new ArrayList<>();
+        requestSessionMap.put(request, sessionList);
+      }
+      sessionList.add(session);
+    }
+
+    xaRealSubscribeManager.realTrRequest((receiveRequest, response) -> {
+      List<WebSocketSession> sessionList = requestSessionMap.get(receiveRequest);
+      if (sessionList != null && sessionList.size() > 0) {
+        String responseStr = objectMapper.writeValueAsString(response);
+        for (WebSocketSession responseSession : sessionList) {
+          if (logger.isDebugEnabled()) {
+            logger.debug(" <= response message \n---\n{}\n---", responseStr);
+          }
+
+          if (responseSession.isOpen()) {
+            synchronized (responseSession) {
+              responseSession.sendMessage(new TextMessage(responseStr));
             }
-            sessionList.add(session);
+          } else {
+            responseSession.close();
+          }
         }
+      }
+    }, request);
+  }
 
-        xaRealSubscribeManager.realTrRequest((receiveRequest, response) -> {
-            List<WebSocketSession> sessionList = requestSessionMap.get(receiveRequest);
-            if(sessionList != null && sessionList.size() > 0 ){
-                String responseStr = objectMapper.writeValueAsString(response);
-                for(WebSocketSession responseSession : sessionList){
-                    if(logger.isDebugEnabled())
-                        logger.debug(" <= response message \n---\n{}\n---", responseStr);
+  /**
+   * 이미 요청된 tr 인지 확인
+   *
+   * @param searchSession
+   * @param request
+   * @return
+   */
+  private boolean checkAlreadyRequest(WebSocketSession searchSession, Request request) {
+    String searchSessionId = searchSession.getId();
+    List<WebSocketSession> sessionIdList = requestSessionMap.get(request);
 
-                    if(responseSession.isOpen())
-                        synchronized (responseSession){
-                            responseSession.sendMessage(new TextMessage(responseStr));
-                        }
-                    else
-                        responseSession.close();
-                }
-            }
-        }, request);
+    if (sessionIdList == null) {
+      return false;
     }
 
-    /**
-     * 이미 요청된 tr 인지 확인
-     * @param searchSession
-     * @param request
-     * @return
-     */
-    private boolean checkAlreadyRequest(WebSocketSession searchSession, Request request){
-        String searchSessionId = searchSession.getId();
-        List<WebSocketSession> sessionIdList = requestSessionMap.get(request);
-
-        if(sessionIdList == null) return false;
-
-        for(WebSocketSession session : sessionIdList){
-            if(searchSessionId.equals(session.getId()))
-                return true;
-        }
-        return false;
+    for (WebSocketSession session : sessionIdList) {
+      if (searchSessionId.equals(session.getId())) {
+        return true;
+      }
     }
+    return false;
+  }
 }

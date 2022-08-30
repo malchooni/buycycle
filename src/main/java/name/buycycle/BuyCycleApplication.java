@@ -8,8 +8,7 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 /**
- * welcome to buycycle
- * https://buycycle.name
+ * welcome to buycycle https://buycycle.name
  *
  * @author : ijyoon
  * @date : 2021/03/24
@@ -18,16 +17,17 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 @SpringBootApplication
 public class BuyCycleApplication {
 
-	private static Logger logger = LoggerFactory.getLogger(BuyCycleApplication.class.getName());
+  private static Logger logger = LoggerFactory.getLogger(BuyCycleApplication.class.getName());
 
-	public static void main(String[] args) {
-		SpringApplicationBuilder app = new SpringApplicationBuilder(name.buycycle.BuyCycleApplication.class);
-		app.build().addListeners(new ApplicationPidFileWriter("./buycycle.pid"));
-		app.run(args);
-		if(logger.isInfoEnabled()){
-			logger.info("======================");
-			logger.info("  Buycycle started... ");
-			logger.info("======================");
-		}
-	}
+  public static void main(String[] args) {
+    SpringApplicationBuilder app = new SpringApplicationBuilder(
+        name.buycycle.BuyCycleApplication.class);
+    app.build().addListeners(new ApplicationPidFileWriter("./buycycle.pid"));
+    app.run(args);
+    if (logger.isInfoEnabled()) {
+      logger.info("======================");
+      logger.info("  Buycycle started... ");
+      logger.info("======================");
+    }
+  }
 }

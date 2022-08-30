@@ -9,61 +9,52 @@ import name.buycycle.vendor.ebest.event.vo.req.Request;
  */
 public class XARealSubscribeCommand {
 
-    private String command;
-    private EBestConfig eBestConfig;
-    private Request request;
-    private XARealResponseEvent xaRealResponseEvent;
+  private String command;
+  private EBestConfig eBestConfig;
+  private Request request;
+  private XARealResponseEvent xaRealResponseEvent;
 
-    public XARealSubscribeCommand(String command) {
-        this.command = command;
-    }
+  public XARealSubscribeCommand(String command) {
+    this.command = command;
+  }
 
-    public Request getRequest() {
-        return request;
-    }
+  public Request getRequest() {
+    return request;
+  }
 
-    public XARealSubscribeCommand setRequest(Request request) {
-        this.request = request;
-        return this;
-    }
+  public XARealSubscribeCommand setRequest(Request request) {
+    this.request = request;
+    return this;
+  }
 
-    public EBestConfig geteBestConfig() {
-        return eBestConfig;
-    }
+  public XARealResponseEvent getXaRealResponseEvent() {
+    return xaRealResponseEvent;
+  }
 
-    public XARealSubscribeCommand seteBestConfig(EBestConfig eBestConfig) {
-        this.eBestConfig = eBestConfig;
-        return this;
-    }
+  public XARealSubscribeCommand setXaRealResponseEvent(XARealResponseEvent xaRealResponseEvent) {
+    this.xaRealResponseEvent = xaRealResponseEvent;
+    return this;
+  }
 
-    public XARealResponseEvent getXaRealResponseEvent() {
-        return xaRealResponseEvent;
-    }
+  public String getCommand() {
+    return command;
+  }
 
-    public XARealSubscribeCommand setXaRealResponseEvent(XARealResponseEvent xaRealResponseEvent) {
-        this.xaRealResponseEvent = xaRealResponseEvent;
-        return this;
-    }
+  public void setCommand(String command) {
+    this.command = command;
+  }
 
-    public String getCommand() {
-        return command;
-    }
+  public EBestConfig getEBestConfig() {
+    return eBestConfig;
+  }
 
-    public void setCommand(String command) {
-        this.command = command;
-    }
+  public XARealSubscribeCommand setEBestConfig(EBestConfig eBestConfig) {
+    this.eBestConfig = eBestConfig;
+    return this;
+  }
 
-    public EBestConfig getEBestConfig() {
-        return eBestConfig;
-    }
-
-    public XARealSubscribeCommand setEBestConfig(EBestConfig eBestConfig) {
-        this.eBestConfig = eBestConfig;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return this.command;
-    }
+  @Override
+  public String toString() {
+    return this.command;
+  }
 }

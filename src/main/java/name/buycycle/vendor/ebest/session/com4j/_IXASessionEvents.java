@@ -9,19 +9,21 @@ import com4j.IID;
 @IID("{6D45238D-A5EB-4413-907A-9EA14D046FE5}")
 public abstract class _IXASessionEvents {
   // Methods:
+
   /**
    * <p>
    * method OnLogIn
    * </p>
+   *
    * @param szCode Mandatory java.lang.String parameter.
-   * @param szMsg Mandatory java.lang.String parameter.
+   * @param szMsg  Mandatory java.lang.String parameter.
    */
 
   @DISPID(1)
   public void login(
-    String szCode,
-    String szMsg) {
-        throw new UnsupportedOperationException();
+      String szCode,
+      String szMsg) {
+    throw new UnsupportedOperationException();
   }
 
 
@@ -33,7 +35,7 @@ public abstract class _IXASessionEvents {
 
   @DISPID(2)
   public void logout() {
-        throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
 
 
@@ -45,9 +47,8 @@ public abstract class _IXASessionEvents {
 
   @DISPID(3)
   public void disconnect() {
-        throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
-
 
   // Properties:
 }

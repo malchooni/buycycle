@@ -15,17 +15,17 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class XARealWebSocketConfigure implements WebSocketConfigurer {
 
-    @Autowired
-    private XASessionChecker xaSessionChecker;
+  @Autowired
+  private XASessionChecker xaSessionChecker;
 
-    @Autowired
-    private XARealWebSocketHandler xaRealWebSocketHandler;
+  @Autowired
+  private XARealWebSocketHandler xaRealWebSocketHandler;
 
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry
-                .addHandler(xaRealWebSocketHandler, "/ebest/realtime")
-                .addInterceptors(xaSessionChecker)
-                .setAllowedOrigins("*");
-    }
+  @Override
+  public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
+    webSocketHandlerRegistry
+        .addHandler(xaRealWebSocketHandler, "/ebest/realtime")
+        .addInterceptors(xaSessionChecker)
+        .setAllowedOrigins("*");
+  }
 }

@@ -7,17 +7,18 @@ import java.util.Map;
  * res 상세
  */
 public class ResDesc {
-    private Map<String, List<Map<String, String>>> resDesc;
 
-    public ResDesc(Map<String, List<Map<String, String>>> resDesc) {
-        this.resDesc = resDesc;
-    }
+  private Map<String, List<Map<String, String>>> resDescMap;
 
-    public Map<String, List<Map<String, String>>> getResDesc() {
-        return resDesc;
-    }
+  public ResDesc(Map<String, List<Map<String, String>>> resDescMap) {
+    this.resDescMap = resDescMap;
+  }
 
-    public void setResDesc(Map<String, List<Map<String, String>>> resDesc) {
-        this.resDesc = resDesc;
-    }
+  public Map<String, List<Map<String, String>>> getResDescMap() {
+    return resDescMap;
+  }
+
+  public void setResDescMap(Map<String, List<Map<String, String>>> resDescMap) {
+    this.resDescMap = resDescMap;
+  }
 }
