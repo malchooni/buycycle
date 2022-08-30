@@ -12,173 +12,187 @@ import org.slf4j.LoggerFactory;
  */
 public class XASessionManager extends AbstractManager<String> {
 
-    private static final Logger logger = LoggerFactory.getLogger(XASessionManager.class);
-    private static final XASessionManager instance = new XASessionManager();
-    public static XASessionManager getInstance(){
-        return instance;
+  private static final Logger logger = LoggerFactory.getLogger(XASessionManager.class);
+  private static final XASessionManager instance = new XASessionManager();
+
+  public static XASessionManager getInstance() {
+    return instance;
+  }
+
+  public static final String COMMAND_LOGIN = "LOGIN";
+  public static final String COMMAND_CLOSE = "CLOSE";
+  public static final String COMMAND_SHUTDOWN = "SHUTDOWN";
+  public static final String COMMAND_TOUCH = "TOUCH";
+  public static final String COMMAND_CHECK = "CHECK";
+
+  private boolean succeedLogin = false;
+  private long touchTime;
+  private XASession xaSession;
+
+  private XASessionManager() {
+    super("XASessionManager", logger);
+    this.setRequestTimeOut(10000).setRequestTimeOutCommand(COMMAND_CHECK);
+  }
+
+  /**
+   * 로그인 확인
+   *
+   * @return 로그인 여부
+   */
+  public boolean isSucceedLogin() {
+    return succeedLogin;
+  }
+
+  /**
+   * 로그인 요청
+   *
+   * @return 응답 값
+   */
+  public Response login() {
+    requestCommand(COMMAND_LOGIN);
+    return responseTake();
+  }
+
+  /**
+   * 세션 종료 요청
+   */
+  public void close() {
+    if (this.succeedLogin) {
+      requestCommand(COMMAND_CLOSE);
     }
+  }
 
-    public static final String LOGIN = "LOGIN";
-    public static final String CLOSE = "CLOSE";
-    public static final String SHUTDOWN = "SHUTDOWN";
-    public static final String TOUCH = "TOUCH";
-    public static final String CHECK = "CHECK";
-
-    private boolean succeedLogin = false;
-    private long touchTime;
-    private XASession xaSession;
-
-    private XASessionManager() {
-        super("XASessionManager", logger);
-        this.setRequestTimeOut(10000).setRequestTimeOutCommand(CHECK);
+  /**
+   * 스레드 종료 요청
+   */
+  public void shutdown() {
+    requestCommand(COMMAND_SHUTDOWN);
+    try {
+      this.join();
+    } catch (InterruptedException ignored) {
+      if (logger.isErrorEnabled()) {
+        logger.error(ignored.getMessage(), ignored);
+      }
+      Thread.currentThread().interrupt();
     }
+  }
 
-    /**
-     * 로그인 확인
-     * @return 로그인 여부
-     */
-    public boolean isSucceedLogin() {
-        return succeedLogin;
+  /**
+   * idle time 갱신
+   */
+  public void touch() {
+    requestCommand(COMMAND_TOUCH);
+  }
+
+  /**
+   * 스레드 초기화
+   */
+  @Override
+  public void initialize() {
+    if (eBestConfig == null) {
+      throw new NullPointerException("EBestConfig is null.");
     }
+    this.xaSession = new XASession(this.eBestConfig);
+    this.touchRequest();
+  }
 
-    /**
-     * 로그인 요청
-     * @return 응답 값
-     */
-    public Response login(){
-        requestCommand(LOGIN);
-        return responseTake();
-    }
-
-    /**
-     * 세션 종료 요청
-     */
-    public void close(){
-        if( this.succeedLogin ){
-            requestCommand(CLOSE);
-        }
-    }
-
-    /**
-     * 스레드 종료 요청
-     */
-    public void shutdown(){
-        requestCommand(SHUTDOWN);
-        try {
-            this.join();
-        } catch (InterruptedException ignored) {}
-    }
-
-    /**
-     * idle time 갱신
-     */
-    public void touch(){
-        requestCommand(TOUCH);
-    }
-
-    /**
-     * 스레드 초기화
-     */
-    @Override
-    public void initialize() {
-        if(eBestConfig == null) throw new NullPointerException("EBestConfig is null.");
-        this.xaSession = new XASession(this.eBestConfig);
+  @Override
+  void request(String command) {
+    switch (command) {
+      case COMMAND_LOGIN:
+        this.loginRequest(this.xaSession);
+        break;
+      case COMMAND_CLOSE:
+        this.closeRequest(this.xaSession);
+        break;
+      case COMMAND_SHUTDOWN:
+        this.shutdownRequest(this.xaSession);
+        break;
+      case COMMAND_TOUCH:
         this.touchRequest();
-    }
-
-    @Override
-    void request(String command){
-        switch (command){
-            case LOGIN:
-                this.loginRequest(this.xaSession);
-                break;
-            case CLOSE:
-                this.closeRequest(this.xaSession);
-                break;
-            case SHUTDOWN:
-                this.shutdownRequest(this.xaSession);
-                break;
-            case TOUCH:
-                this.touchRequest();
-                break;
-            case CHECK:
-                this.checkRequest(this.xaSession);
-                break;
-            default:
-                if(logger.isErrorEnabled())
-                    logger.error("unsupported operation", new UnsupportedOperationException(command));
+        break;
+      case COMMAND_CHECK:
+        this.checkRequest(this.xaSession);
+        break;
+      default:
+        if (logger.isErrorEnabled()) {
+          logger.error("unsupported operation", new UnsupportedOperationException(command));
         }
     }
+  }
 
-    /**
-     * 로그인 요청
-     */
-    private void loginRequest(XASession xaSession) {
+  /**
+   * 로그인 요청
+   */
+  private void loginRequest(XASession xaSession) {
 
-        if (!this.succeedLogin){
-            Response response;
-            try{
-                response = xaSession.login();
-            }catch (InterruptedException | RequestTimeOutException | ConnectFailException e){
-                if(logger.isErrorEnabled())
-                    logger.error(e.getMessage(), e);
-                response = errorResponse(e);
-            }
-
-            if(response != null && response.getHeader("szCode").equals("0000")) {
-                this.succeedLogin = true;
-            }
-            responseCommand(response);
-        }else{
-            responseCommand(null);
+    if (!this.succeedLogin) {
+      Response response;
+      try {
+        response = xaSession.login();
+      } catch (InterruptedException | RequestTimeOutException | ConnectFailException e) {
+        if (logger.isErrorEnabled()) {
+          logger.error(e.getMessage(), e);
         }
+        Thread.currentThread().interrupt();
+        response = errorResponse(e);
+      }
 
+      if (response != null && response.getHeader("szCode").equals("0000")) {
+        this.succeedLogin = true;
+      }
+      responseCommand(response);
+    } else {
+      responseCommand(null);
     }
 
-    private Response errorResponse(Throwable e){
-        Response response = new Response();
-        response.putHeader("buyCycleErrMsg", e.getMessage());
-        return response;
-    }
+  }
 
-    /**
-     * 세션 종료 요청
-     * @param xaSession XASession
-     */
-    private void closeRequest(XASession xaSession){
-        xaSession.close();
-        this.succeedLogin = false;
-    }
+  private Response errorResponse(Throwable e) {
+    Response response = new Response();
+    response.putHeader("buyCycleErrMsg", e.getMessage());
+    return response;
+  }
 
-    /**
-     * 스레드 종료
-     * @param xaSession XASession
-     */
-    private void shutdownRequest(XASession xaSession){
-        if(isSucceedLogin()){
-            this.closeRequest(xaSession);
-        }
-        setRunning(false);
-    }
+  /**
+   * 세션 종료 요청
+   *
+   * @param xaSession XASession
+   */
+  private void closeRequest(XASession xaSession) {
+    xaSession.close();
+    this.succeedLogin = false;
+  }
 
-    /**
-     * idle time 갱신
-     */
-    private void touchRequest() {
-        this.touchTime = System.currentTimeMillis();
+  /**
+   * 스레드 종료
+   *
+   * @param xaSession XASession
+   */
+  private void shutdownRequest(XASession xaSession) {
+    if (isSucceedLogin()) {
+      this.closeRequest(xaSession);
     }
+    setRunning(false);
+  }
 
-    /**
-     * idle time out session close
-     */
-    private void checkRequest(XASession xaSession) {
-        long now = System.currentTimeMillis();
-        if( (now - this.touchTime) > (5 * 60 * 1000) ){
-            if(isSucceedLogin()) {
-                this.closeRequest(xaSession);
-                if(logger.isInfoEnabled())
-                    logger.info("xasession idle time out. connection closed.");
-            }
-        }
+  /**
+   * idle time 갱신
+   */
+  private void touchRequest() {
+    this.touchTime = System.currentTimeMillis();
+  }
+
+  /**
+   * idle time out session close
+   */
+  private void checkRequest(XASession xaSession) {
+    long now = System.currentTimeMillis();
+    if ((now - this.touchTime) > (5 * 60 * 1000) && isSucceedLogin()) {
+      this.closeRequest(xaSession);
+      if (logger.isInfoEnabled()) {
+        logger.info("xasession idle time out. connection closed.");
+      }
     }
+  }
 }

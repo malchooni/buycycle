@@ -13,12 +13,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class XASessionConfigure implements WebMvcConfigurer {
 
-    @Autowired
-    private XASessionChecker xaSessionChecker;
+  @Autowired
+  private XASessionChecker xaSessionChecker;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(xaSessionChecker)
-                .addPathPatterns("/ebest/realtime", "/ebest/queries");
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(xaSessionChecker)
+        .addPathPatterns("/ebest/realtime", "/ebest/queries");
+  }
 }

@@ -13,31 +13,32 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "ebest")
 @ConstructorBinding
 public class EBestConfig {
-    private String resRootPath;
-    private Connect connect;
-    private User user;
 
-    public String getResRootPath() {
-        return resRootPath;
-    }
+  private String resRootPath;
+  private Connect connect;
+  private User user;
 
-    public void setResRootPath(String resRootPath) {
-        this.resRootPath = resRootPath;
-    }
+  public String getResRootPath() {
+    return resRootPath;
+  }
 
-    public Connect getConnect() {
-        return connect;
-    }
+  public void setResRootPath(String resRootPath) {
+    this.resRootPath = resRootPath;
+  }
 
-    public void setConnect(Connect connect) {
-        this.connect = connect;
-    }
+  public Connect getConnect() {
+    return connect;
+  }
 
-    public User getUser() {
-        return user;
-    }
+  public void setConnect(Connect connect) {
+    this.connect = connect;
+  }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
 }

@@ -1,6 +1,5 @@
 package name.buycycle.vendor.ebest.event.handler;
 
-import name.buycycle.vendor.ebest.event.XARealSubscribe;
 import name.buycycle.vendor.ebest.event.com4j._IXARealEvents;
 import name.buycycle.vendor.ebest.event.vo.res.Response;
 import name.buycycle.vendor.ebest.manage.XASessionManager;
@@ -14,13 +13,11 @@ import org.slf4j.LoggerFactory;
  */
 public class XARealEventHandler extends _IXARealEvents {
 
-    private Logger logger = LoggerFactory.getLogger(XARealEventHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(XARealEventHandler.class);
     private Response response;
 
-    private Object monitor;
-
-    private XARealSubscribe xaRealSubscribe;
-    private String requestUUID;
+    private final Object monitor;
+    private final String requestUUID;
 
     public XARealEventHandler(Object monitor, String uuid) {
         this.monitor = monitor;
@@ -43,7 +40,7 @@ public class XARealEventHandler extends _IXARealEvents {
         XASessionManager.getInstance().touch();
 
         synchronized (this.monitor){
-            this.monitor.notify();
+            this.monitor.notifyAll();
         }
     }
 
@@ -58,7 +55,7 @@ public class XARealEventHandler extends _IXARealEvents {
         this.response.putHeader("szData", szData);
         this.response.putHeader("szFiller", szFiller);
         synchronized (this.monitor){
-            this.monitor.notify();
+            this.monitor.notifyAll();
         }
     }
 }

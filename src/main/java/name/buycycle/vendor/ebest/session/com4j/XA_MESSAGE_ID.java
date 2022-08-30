@@ -3,6 +3,7 @@ package name.buycycle.vendor.ebest.session.com4j;
 import com4j.ComEnum;
 
 /**
+ *
  */
 public enum XA_MESSAGE_ID implements ComEnum {
   /**
@@ -20,6 +21,12 @@ public enum XA_MESSAGE_ID implements ComEnum {
   ;
 
   private final int value;
-  XA_MESSAGE_ID(int value) { this.value=value; }
-  public int comEnumValue() { return value; }
+
+  XA_MESSAGE_ID(int value) {
+    this.value = value;
+  }
+
+  public int comEnumValue() {
+    return value;
+  }
 }

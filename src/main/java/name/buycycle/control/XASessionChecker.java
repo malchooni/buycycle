@@ -18,52 +18,54 @@ import java.util.Map;
 
 /**
  * 이베스트 세션 확인
+ *
  * @author : ijyoon
  * @date : 2021/03/24
  */
 @Component
 public class XASessionChecker implements HandlerInterceptor, HandshakeInterceptor {
 
-    private Logger logger = LoggerFactory.getLogger(XASessionChecker.class);
+  private XASessionManager xaSessionManager = XASessionManager.getInstance();
 
-    private XASessionManager xaSessionManager = XASessionManager.getInstance();
+  @Override
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+      throws Exception {
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+      if (xaSessionManager.isSucceedLogin()) {
+          return true;
+      }
 
-        if(xaSessionManager.isSucceedLogin())
-            return true;
-
-        Response xaConResponse = xaSessionManager.login();
-        if(xaSessionManager.isSucceedLogin()){
-            return true;
-        }else{
-            if(xaConResponse == null) {
-                xaConResponse = new Response(null);
-                xaConResponse.putHeader("buyCycleErrMsg", "login response is null.");
-            }
-            ObjectMapper objectMapper = new ObjectMapper();
-            response.setContentType("application/json;charset=utf-8");
-            response.getWriter().write(objectMapper.writeValueAsString(xaConResponse));
-            return false;
-        }
+    Response xaConResponse = xaSessionManager.login();
+    if (xaSessionManager.isSucceedLogin()) {
+      return true;
+    } else {
+      if (xaConResponse == null) {
+        xaConResponse = new Response(null);
+        xaConResponse.putHeader("buyCycleErrMsg", "login response is null.");
+      }
+      ObjectMapper objectMapper = new ObjectMapper();
+      response.setContentType("application/json;charset=utf-8");
+      response.getWriter().write(objectMapper.writeValueAsString(xaConResponse));
+      return false;
     }
+  }
 
-    @Override
-    public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
+  @Override
+  public boolean beforeHandshake(ServerHttpRequest serverHttpRequest,
+      ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler,
+      Map<String, Object> map) throws Exception {
 
-        if(xaSessionManager.isSucceedLogin())
-            return true;
+      if (xaSessionManager.isSucceedLogin()) {
+          return true;
+      }
 
-        Response xaConResponse = xaSessionManager.login();
-        if(xaSessionManager.isSucceedLogin()){
-            return true;
-        }else {
-            return false;
-        }
-    }
+    xaSessionManager.login();
+    return xaSessionManager.isSucceedLogin();
+  }
 
-    @Override
-    public void afterHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Exception e) {
-    }
+  @Override
+  public void afterHandshake(ServerHttpRequest serverHttpRequest,
+      ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Exception e) {
+    // implementation ignored
+  }
 }

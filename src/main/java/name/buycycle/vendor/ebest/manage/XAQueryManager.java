@@ -9,29 +9,32 @@ import org.slf4j.LoggerFactory;
 
 public class XAQueryManager implements Manager {
 
-    private static final Logger logger = LoggerFactory.getLogger(XAQueryManager.class);
-    private static final XAQueryManager instance = new XAQueryManager();
-    public static XAQueryManager getInstance(){
-        return instance;
-    }
+  private static final XAQueryManager instance = new XAQueryManager();
 
-    private EBestConfig eBestConfig;
-    private XAQueryRequest xaQueryRequest;
+  public static XAQueryManager getInstance() {
+    return instance;
+  }
 
-    private XAQueryManager(){}
+  private EBestConfig eBestConfig;
+  private XAQueryRequest xaQueryRequest;
 
-    @Override
-    public void setEBestConfig(EBestConfig eBestConfig) {
-        this.eBestConfig = eBestConfig;
-    }
+  private XAQueryManager() {
+  }
 
-    @Override
-    public void initialize() {
-        if(eBestConfig == null) throw new NullPointerException("EBestConfig is null.");
-        this.xaQueryRequest = new XAQueryRequest(this.eBestConfig);
-    }
+  @Override
+  public void setEBestConfig(EBestConfig eBestConfig) {
+    this.eBestConfig = eBestConfig;
+  }
 
-    public Response requestQuery(Request request){
-        return this.xaQueryRequest.requestQuery(request);
-    }
+  @Override
+  public void initialize() {
+      if (eBestConfig == null) {
+          throw new NullPointerException("EBestConfig is null.");
+      }
+    this.xaQueryRequest = new XAQueryRequest(this.eBestConfig);
+  }
+
+  public Response requestQuery(Request request) {
+    return this.xaQueryRequest.requestQuery(request);
+  }
 }
