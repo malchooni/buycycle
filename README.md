@@ -1,3 +1,8 @@
+이베스트투자증권의 OPEN API 지원에 따라 해당 프로젝트는 종료 됩니다.
+
+https://openapi.ebestsec.co.kr/intro
+
+
 <p align="center">
 <a href="https://opensource.buycycle.name" target="_blank">
 <img src="https://raw.githubusercontent.com/yalsooni/yalsooni.github.io/main/image/page/buycycle.svg" width="400px"/>
